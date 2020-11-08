@@ -7,7 +7,9 @@ namespace CtLists
     {
         private List<Bottle> m_bottles = new List<Bottle>();
 
-        static WineList BuildFromCellar(Cellar cellar, string[] rgsLocations, string[] rgsColor)
+        public List<Bottle> Bottles => m_bottles;
+
+        public static WineList BuildFromCellar(Cellar cellar, string[] rgsLocations, string[] rgsColor)
         {
             WineList list = new WineList();
 
@@ -50,6 +52,7 @@ namespace CtLists
                 list.m_bottles.Add(bottle);
             }
 
+            list.m_bottles.Sort();
             return list;
         }
     }

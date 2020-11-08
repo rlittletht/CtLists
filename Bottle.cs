@@ -99,7 +99,7 @@ namespace CtLists
             if (!m_bottleValues.ContainsKey(sKey))
                 return false;
 
-            if (string.IsNullOrEmpty(m_bottleValues[sKey]))
+            if (string.IsNullOrEmpty(m_bottleValues[sKey]) || m_bottleValues[sKey] == "Unknown")
                 return false;
 
             return true;
@@ -122,6 +122,25 @@ namespace CtLists
                 {
                     return GetValue("Wine");
                 }
+            }
+        }
+
+        public string SubRegionAppellation
+        {
+            get
+            {
+                if (HasValue("SubRegion"))
+                {
+                    if (HasValue("Appellation"))
+                        return String.Format("{0} {1}", GetValue("SubRegion"), GetValue("Appellation"));
+
+                    return GetValue("SubRegion");
+                }
+
+                if (HasValue("Appellation"))
+                    return GetValue("Appellation");
+
+                return "";
             }
         }
 

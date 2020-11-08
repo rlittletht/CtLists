@@ -49,6 +49,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bottle.cs" />
+    <Compile Include="Cellar.cs" />
     <Compile Include="CtLists.cs">
       <SubType>Form</SubType>
     </Compile>

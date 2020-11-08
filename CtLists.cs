@@ -49,6 +49,9 @@ namespace CtLists
             HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
 
             doc.LoadHtml(sHtml);
+
+            Cellar celler = Cellar.BuildFromDocument(doc);
+            MessageBox.Show("loaded");
         }
     }
 }

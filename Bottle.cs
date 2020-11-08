@@ -14,6 +14,9 @@ namespace CtLists
         {
             int n = 0;
 
+            n = String.Compare(this.Varietal, other.Varietal, StringComparison.OrdinalIgnoreCase);
+            if (n != 0)
+                return n;
             // first, compare the country
             n = String.Compare(this.Country, other.Country, StringComparison.OrdinalIgnoreCase);
             if (n != 0)
@@ -23,7 +26,7 @@ namespace CtLists
             if (n != 0)
                 return n;
 
-            n = String.Compare(this.Appelation, other.Appelation, StringComparison.OrdinalIgnoreCase);
+            n = String.Compare(this.Appellation, other.Appellation, StringComparison.OrdinalIgnoreCase);
             if (n != 0)
                 return n;
 
@@ -105,12 +108,13 @@ namespace CtLists
             return true;
         }
 
-        public string Appelation => GetValueOrUnk("Appelation");
+        public string Appellation => GetValueOrUnk("Appellation");
         public string SubRegion => GetValueOrUnk("SubRegion");
         public string Country => GetValueOrUnk("Country");
         public string Vintage => GetValueOrUnk("Vintage");
         public string Color => GetValueOrUnk("Color");
         public string Location => GetValueOrUnk("Location");
+        public string Varietal => GetValueOrUnk("Varietal");
 
         public string Wine
         {
@@ -184,8 +188,8 @@ namespace CtLists
 
             list.Sort();
 
-            Assert.AreEqual(list[0].Vintage, "200");
-            Assert.AreEqual(list[1].Vintage, "1999");
+            Assert.AreEqual("200", list[0].Vintage);
+            Assert.AreEqual("1999", list[1].Vintage);
         }
 
         [Test]
@@ -202,10 +206,42 @@ namespace CtLists
 
             list.Sort();
 
-            Assert.AreEqual(list[0].Vintage, "200");
-            Assert.AreEqual(list[1].Vintage, "1999");
+            Assert.AreEqual("200", list[0].Vintage);
+            Assert.AreEqual("1999", list[1].Vintage);
         }
 
+        [Test]
+        public static void TestAppellationCompare()
+        {
+            Bottle bottle1 = new Bottle();
+            bottle1.m_bottleValues.Add("Vintage", "1999");
+            bottle1.m_bottleValues.Add("Wine", "Wine 1");
+            bottle1.m_bottleValues.Add("Country", "Country 1");
+            bottle1.m_bottleValues.Add("SubRegion", "SR 1");
+            bottle1.m_bottleValues.Add("Appellation", "App 1");
+
+            Bottle bottle2 = new Bottle();
+            bottle2.m_bottleValues.Add("Vintage", "1999");
+            bottle2.m_bottleValues.Add("Wine", "Wine 2");
+            bottle2.m_bottleValues.Add("Country", "Country 1");
+            bottle2.m_bottleValues.Add("SubRegion", "SR 1");
+            bottle2.m_bottleValues.Add("Appellation", "App 2");
+
+            Bottle bottle3 = new Bottle();
+            bottle3.m_bottleValues.Add("Vintage", "1999");
+            bottle3.m_bottleValues.Add("Wine", "Wine 3");
+            bottle3.m_bottleValues.Add("Country", "Country 1");
+            bottle3.m_bottleValues.Add("SubRegion", "SR 1");
+            bottle3.m_bottleValues.Add("Appellation", "App 1");
+
+            List<Bottle> list = new List<Bottle>(new Bottle[] { bottle1, bottle2, bottle3 });
+
+            list.Sort();
+
+            Assert.AreEqual("1999 Wine 1", list[0].Wine);
+            Assert.AreEqual("1999 Wine 3", list[1].Wine);
+            Assert.AreEqual("1999 Wine 2", list[2].Wine);
+        }
         #endregion
 
     }
@@ -227,7 +263,11 @@ namespace CtLists
 
         public string GetStringFromRow(string sKey, HtmlNode row)
         {
-            return row.ChildNodes[m_headerMapping[sKey]].InnerText;
+            string s = row.ChildNodes[m_headerMapping[sKey]].InnerText;
+
+            if (string.IsNullOrWhiteSpace(s) || s == "&nbsp;")
+                return "";
+            return s;
         }
 
         public Bottle BuildBottleFromRow(HtmlNode row)

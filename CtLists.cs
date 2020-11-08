@@ -120,20 +120,22 @@ namespace CtLists
                 string sCountryCurrent = "";
                 string sSubRegionAppellationCurrent = "";
 
-                if ((rgsColors != null && rgsColors.Length == 1) || list.Bottles.Count == 1)
-                    sColorCurrent = list.Bottles[0].Color;
+//                if ((rgsColors != null && rgsColors.Length == 1) || list.Bottles.Count == 1)
+//                    sColorCurrent = list.Bottles[0].Color;
 
                 foreach (Bottle bottle in list.Bottles)
                 {
-                    if (String.Compare(sColorCurrent, bottle.Color, StringComparison.OrdinalIgnoreCase) != 0)
+                    if (String.Compare(sColorCurrent, bottle.Varietal, StringComparison.OrdinalIgnoreCase) != 0)
                     {
-                        sColorCurrent = bottle.Color;
+                        sColorCurrent = bottle.Varietal;
                         tw.WriteLine($"<h1>{sColorCurrent}</h1>");
+                        sCountryCurrent = "";
                     }
 
                     if (String.Compare(sCountryCurrent, bottle.Country, StringComparison.OrdinalIgnoreCase) != 0)
                     {
                         sCountryCurrent = bottle.Country;
+                        sSubRegionAppellationCurrent = "";
                         tw.WriteLine($"<h2>{sCountryCurrent}</h2>");
                     }
 
@@ -166,7 +168,7 @@ namespace CtLists
                     if (bottle.Count != 1)
                     {
                         if (sbInfo.Length == 0)
-                            sbInfo.AppendFormat("{0} bottles", bottle.Count);
+                            sbInfo.AppendFormat("{0}", bottle.Count); // could add "bottles" suffix here...
                         else
                             sbInfo.AppendFormat(",{0}", bottle.Count);
                     }
@@ -178,7 +180,7 @@ namespace CtLists
                         int iSplit = bottle.Wine.LastIndexOf(' ', 70);
                         tw.Write(bottle.Wine.Substring(0, iSplit));
                         tw.Write("</p>");
-                        tw.Write("<p class=Wine>");
+                        tw.Write("<p class=Wine>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
                         tw.Write(bottle.Wine.Substring(iSplit + 1));
                     }
                     else

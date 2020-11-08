@@ -8,6 +8,8 @@ namespace CtLists
     {
         private Dictionary<string, string> m_bottleValues = new Dictionary<string, string>();
 
+        private int m_countBottles = 1;
+
         private string[] m_valueKeys =
         {
             "iWine",
@@ -47,6 +49,13 @@ namespace CtLists
             "Begin",
             "End"
         };
+
+        public void AddBottle()
+        {
+            m_countBottles++;
+        }
+
+        public int Count => m_countBottles;
 
         public bool HasValue(string sKey)
         {

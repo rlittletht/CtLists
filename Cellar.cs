@@ -18,12 +18,24 @@ namespace CtLists
             HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//tr");
             Cellar cellar = new Cellar();
 
+            Dictionary<string, Bottle> bottlesSeen = new Dictionary<string, Bottle>();
+
             foreach (HtmlNode node in nodes)
             {
                 if (node.ChildNodes[0].Name == "th")
                     continue;
 
-                cellar.m_bottles.Add(builder.BuildBottleFromRow(node));
+                Bottle bottle = builder.BuildBottleFromRow(node);
+
+                if (bottlesSeen.ContainsKey(bottle.Wine))
+                {
+                    bottlesSeen[bottle.Wine].AddBottle();
+                }
+                else
+                {
+                    cellar.m_bottles.Add(bottle);
+                    bottlesSeen.Add(bottle.Wine, bottle);;
+                }
             }
             return cellar;
         }

@@ -48,6 +48,52 @@ namespace CtLists
             "End"
         };
 
+        public bool HasValue(string sKey)
+        {
+            if (!m_bottleValues.ContainsKey(sKey))
+                return false;
+
+            if (string.IsNullOrEmpty(m_bottleValues[sKey]))
+                return false;
+
+            return true;
+        }
+
+        public string Wine
+        {
+            get
+            {
+                if (HasValue("Vintage"))
+                    return String.Format("{0} {1}", GetValue("Vintage"), GetValue("Wine"));
+                else
+                {
+                    return GetValue("Wine");
+                }
+            }
+        }
+
+        public string Color
+        {
+            get
+            {
+                if (HasValue("Color"))
+                    return GetValue("Color");
+
+                return "Unk";
+            }
+        }
+
+        public string Location
+        {
+            get
+            {
+                if (HasValue("Location"))
+                    return GetValue("Location");
+
+                return "Unk";
+            }
+
+        }
         public Bottle(BottleBuilder builder, HtmlNode row)
         {
             foreach (string s in m_valueKeys)

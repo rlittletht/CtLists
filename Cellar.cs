@@ -7,6 +7,8 @@ namespace CtLists
     {
         private List<Bottle> m_bottles = new List<Bottle>();
 
+        public List<Bottle> Bottles => m_bottles;
+
         public static Cellar BuildFromDocument(HtmlDocument doc)
         {
             BottleBuilder builder = new BottleBuilder();

@@ -27,6 +27,8 @@ namespace CtLists
             InitializeComponent();
         }
 
+        private Cellar m_cellar;
+
         async private void DoTestIt(object sender, EventArgs e)
         {
             string sRequest = $"https://www.cellartracker.com/xlquery.asp?table=Inventory&User={m_username}&Password={m_password}";
@@ -50,8 +52,32 @@ namespace CtLists
 
             doc.LoadHtml(sHtml);
 
-            Cellar celler = Cellar.BuildFromDocument(doc);
+            m_cellar = Cellar.BuildFromDocument(doc);
+            PopulateFilters();
             MessageBox.Show("loaded");
+        }
+
+        private void PopulateFilters()
+        {
+            m_lbxColor.Items.Clear();
+            m_lbxLocation.Items.Clear();
+
+            HashSet<string> locations = new HashSet<string>();
+            HashSet<string> colors = new HashSet<string>();
+
+            foreach (Bottle bottle in m_cellar.Bottles)
+            {
+                if (!locations.Contains(bottle.Location))
+                    locations.Add(bottle.Location);
+                if (!colors.Contains(bottle.Color))
+                    colors.Add(bottle.Color);
+            }
+
+            foreach (string sLocation in locations)
+                m_lbxLocation.Items.Add(sLocation);
+
+            foreach (string sColor in colors)
+                m_lbxColor.Items.Add(sColor);
         }
     }
 }

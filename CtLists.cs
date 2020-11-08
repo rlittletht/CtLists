@@ -13,13 +13,13 @@ using System.Windows.Forms;
 
 namespace CtLists
 {
-    public partial class Form1 : Form
+    public partial class CtLists : Form
     {
         private string m_username;
         private string m_password;
         private HttpClient m_client = new HttpClient();
 
-        public Form1(string username, string password)
+        public CtLists(string username, string password)
         {
             m_username = username;
             m_password = password;

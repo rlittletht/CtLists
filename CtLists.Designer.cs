@@ -1,6 +1,6 @@
 ﻿namespace CtLists
 {
-    partial class Form1
+    partial class CtLists
     {
         /// <summary>
         /// Required designer variable.

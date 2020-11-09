@@ -113,7 +113,7 @@ namespace CtLists
                 return;
             }
 
-            using (TextWriter tw = new StreamWriter("c:\\temp\\WineList2.html"))
+            using (TextWriter tw = new StreamWriter(m_ebOutFile.Text))
             {
                 tw.WriteLine("<HTML xmlns:w='urn:schemas-microsoft-com:office:word'><meta http-equiv='Content-Type' content='text/html; charset=utf-8'>");
                 tw.WriteLine("<BODY>");

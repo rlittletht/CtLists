@@ -100,11 +100,12 @@ namespace CtLists
             // build the filters
             string[] rgsLocations = null;
             string[] rgsColors = null;
+            bool fGroupByVarietal = m_fVarietalGrouping.Checked;
 
             rgsLocations = BuildStringArrayFromCheckedListbox(m_lbxLocation);
             rgsColors = BuildStringArrayFromCheckedListbox(m_lbxColor);
 
-            WineList list = WineList.BuildFromCellar(m_cellar, rgsLocations, rgsColors);
+            WineList list = WineList.BuildFromCellar(m_cellar, rgsLocations, rgsColors, fGroupByVarietal);
 
             if (list.Bottles.Count == 0)
             {
@@ -120,16 +121,31 @@ namespace CtLists
                 string sCountryCurrent = "";
                 string sSubRegionAppellationCurrent = "";
 
-//                if ((rgsColors != null && rgsColors.Length == 1) || list.Bottles.Count == 1)
-//                    sColorCurrent = list.Bottles[0].Color;
+                if (!fGroupByVarietal)
+                {
+                    if ((rgsColors != null && rgsColors.Length == 1) || list.Bottles.Count == 1)
+                        sColorCurrent = list.Bottles[0].Color;
+                }
 
                 foreach (Bottle bottle in list.Bottles)
                 {
-                    if (String.Compare(sColorCurrent, bottle.Varietal, StringComparison.OrdinalIgnoreCase) != 0)
+                    if (fGroupByVarietal)
                     {
-                        sColorCurrent = bottle.Varietal;
-                        tw.WriteLine($"<h1>{sColorCurrent}</h1>");
-                        sCountryCurrent = "";
+                        if (String.Compare(sColorCurrent, bottle.Varietal, StringComparison.OrdinalIgnoreCase) != 0)
+                        {
+                            sColorCurrent = bottle.Varietal;
+                            tw.WriteLine($"<h1>{sColorCurrent}</h1>");
+                            sCountryCurrent = "";
+                        }
+                    }
+                    else
+                    {
+                        if (String.Compare(sColorCurrent, bottle.Color, StringComparison.OrdinalIgnoreCase) != 0)
+                        {
+                            sColorCurrent = bottle.Color;
+                            tw.WriteLine($"<h1>{sColorCurrent}</h1>");
+                            sCountryCurrent = "";
+                        }
                     }
 
                     if (String.Compare(sCountryCurrent, bottle.Country, StringComparison.OrdinalIgnoreCase) != 0)

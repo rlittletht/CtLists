@@ -8,43 +8,64 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace CtLists
 {
-    public class Bottle : IComparable<Bottle>
+    public class Bottle
     {
-        public int CompareTo(Bottle other)
+        public static int CompareBottle(Bottle left, Bottle right, bool fVarietal)
         {
             int n = 0;
 
-            n = String.Compare(this.Varietal, other.Varietal, StringComparison.OrdinalIgnoreCase);
-            if (n != 0)
-                return n;
+            if (fVarietal)
+            {
+                n = String.Compare(left.Varietal, right.Varietal, StringComparison.OrdinalIgnoreCase);
+                if (n != 0)
+                    return n;
+            }
+            else
+            {
+                n = String.Compare(left.Color, right.Color, StringComparison.OrdinalIgnoreCase);
+                if (n != 0)
+                    return n;
+            }
+
             // first, compare the country
-            n = String.Compare(this.Country, other.Country, StringComparison.OrdinalIgnoreCase);
+            n = String.Compare(left.Country, right.Country, StringComparison.OrdinalIgnoreCase);
             if (n != 0)
                 return n;
 
-            n = String.Compare(this.SubRegion, other.SubRegion, StringComparison.OrdinalIgnoreCase);
+            n = String.Compare(left.SubRegion, right.SubRegion, StringComparison.OrdinalIgnoreCase);
             if (n != 0)
                 return n;
 
-            n = String.Compare(this.Appellation, other.Appellation, StringComparison.OrdinalIgnoreCase);
+            n = String.Compare(left.Appellation, right.Appellation, StringComparison.OrdinalIgnoreCase);
             if (n != 0)
                 return n;
 
-            if (!Int32.TryParse(this.Vintage, out int leftVintage))
+            if (!Int32.TryParse(left.Vintage, out int leftVintage))
                 leftVintage = 0;
 
-            if (!Int32.TryParse(other.Vintage, out int rightVintage))
+            if (!Int32.TryParse(right.Vintage, out int rightVintage))
                 rightVintage = 0;
 
             if (leftVintage != rightVintage)
                 return leftVintage - rightVintage;
 
-            n = String.Compare(this.Wine, other.Wine, StringComparison.OrdinalIgnoreCase);
+            n = String.Compare(left.Wine, right.Wine, StringComparison.OrdinalIgnoreCase);
             if (n != 0)
                 return n;
 
-            return String.Compare(this.Location, other.Location, StringComparison.OrdinalIgnoreCase);
+            return String.Compare(left.Location, right.Location, StringComparison.OrdinalIgnoreCase);
         }
+
+        public static int SortByVarietal(Bottle left, Bottle right)
+        {
+            return CompareBottle(left, right, true /*fVarietal*/);
+        }
+
+        public static int SortByColor(Bottle left, Bottle right)
+        {
+            return CompareBottle(left, right, false /*fVarietal*/);
+        }
+
 
         private Dictionary<string, string> m_bottleValues = new Dictionary<string, string>();
 

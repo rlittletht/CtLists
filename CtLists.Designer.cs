@@ -34,6 +34,7 @@
             this.m_lbxLocation = new System.Windows.Forms.CheckedListBox();
             this.m_lbxColor = new System.Windows.Forms.CheckedListBox();
             this.button2 = new System.Windows.Forms.Button();
+            this.m_fVarietalGrouping = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -94,11 +95,22 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.MakeList);
             // 
+            // m_fVarietalGrouping
+            // 
+            this.m_fVarietalGrouping.AutoSize = true;
+            this.m_fVarietalGrouping.Location = new System.Drawing.Point(12, 276);
+            this.m_fVarietalGrouping.Name = "m_fVarietalGrouping";
+            this.m_fVarietalGrouping.Size = new System.Drawing.Size(158, 24);
+            this.m_fVarietalGrouping.TabIndex = 6;
+            this.m_fVarietalGrouping.Text = "Group by Varietal";
+            this.m_fVarietalGrouping.UseVisualStyleBackColor = true;
+            // 
             // CtLists
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.m_fVarietalGrouping);
             this.Controls.Add(this.button2);
             this.Controls.Add(label2);
             this.Controls.Add(label1);
@@ -118,6 +130,7 @@
         private System.Windows.Forms.CheckedListBox m_lbxLocation;
         private System.Windows.Forms.CheckedListBox m_lbxColor;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.CheckBox m_fVarietalGrouping;
     }
 }
 

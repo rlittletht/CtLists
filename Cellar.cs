@@ -1,13 +1,17 @@
 ﻿using System.Collections.Generic;
 using HtmlAgilityPack;
+using Microsoft.Identity.Client;
+using NUnit.Framework.Constraints;
 
 namespace CtLists
 {
     public class Cellar
     {
-        private List<Bottle> m_bottles = new List<Bottle>();
+        private Dictionary<string, Bottle> m_bottles = new Dictionary<string, Bottle>();
 
-        public List<Bottle> Bottles => m_bottles;
+        public IEnumerable<Bottle> Bottles => m_bottles.Values;
+
+        public Bottle this[string sScanCode] => m_bottles[sScanCode];
 
         public static Cellar BuildFromDocument(HtmlDocument doc)
         {
@@ -18,8 +22,6 @@ namespace CtLists
             HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//tr");
             Cellar cellar = new Cellar();
 
-            Dictionary<string, Bottle> bottlesSeen = new Dictionary<string, Bottle>();
-
             foreach (HtmlNode node in nodes)
             {
                 if (node.ChildNodes[0].Name == "th")
@@ -27,15 +29,7 @@ namespace CtLists
 
                 Bottle bottle = builder.BuildBottleFromRow(node);
 
-                if (bottlesSeen.ContainsKey(bottle.Wine))
-                {
-                    bottlesSeen[bottle.Wine].AddBottle();
-                }
-                else
-                {
-                    cellar.m_bottles.Add(bottle);
-                    bottlesSeen.Add(bottle.Wine, bottle);;
-                }
+                cellar.m_bottles.Add(bottle.Barcode, bottle);
             }
             return cellar;
         }

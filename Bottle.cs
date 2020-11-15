@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.Pkcs;
 using System.Windows.Forms;
 using HtmlAgilityPack;
 using NUnit.Framework;
@@ -10,6 +11,11 @@ namespace CtLists
 {
     public class Bottle
     {
+        public Bottle(Bottle bottle)
+        {
+            m_bottleValues = new Dictionary<string, string>(bottle.m_bottleValues);
+        }
+
         public static int CompareBottle(Bottle left, Bottle right, bool fVarietal)
         {
             int n = 0;
@@ -116,7 +122,7 @@ namespace CtLists
             m_countBottles++;
         }
 
-        public int Count => m_countBottles;
+        public int Count { get; set; }
 
         public bool HasValue(string sKey)
         {
@@ -129,6 +135,14 @@ namespace CtLists
             return true;
         }
 
+        public string GetValueOrEmpty(string sValue)
+        {
+            if (HasValue(sValue))
+                return m_bottleValues[sValue];
+
+            return "";
+        }
+        public string Barcode => GetValueOrUnk("Barcode");
         public string Appellation => GetValueOrUnk("Appellation");
         public string SubRegion => GetValueOrUnk("SubRegion");
         public string Country => GetValueOrUnk("Country");

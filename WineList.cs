@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 namespace CtLists
@@ -12,6 +13,33 @@ namespace CtLists
         public static WineList BuildFromCellar(Cellar cellar, string[] rgsLocations, string[] rgsColor, bool fGroupByVarietal)
         {
             WineList list = new WineList();
+            Dictionary<string, int> bottlesSeen = new Dictionary<string, int>();
+
+            // collect the number of bottles seen
+            foreach (Bottle bottle in cellar.Bottles)
+            {
+                if (rgsLocations != null)
+                {
+                    bool fMatchLocation = false;
+
+                    foreach (string sLocation in rgsLocations)
+                    {
+                        if (string.Compare(bottle.Location, sLocation, true) == 0)
+                        {
+                            fMatchLocation = true;
+                            break;
+                        }
+                    }
+
+                    if (!fMatchLocation)
+                        continue;
+                }
+
+                if (bottlesSeen.ContainsKey(bottle.Wine))
+                    bottlesSeen[bottle.Wine]++;
+                else
+                    bottlesSeen.Add(bottle.Wine, 1);
+            }
 
             foreach (Bottle bottle in cellar.Bottles)
             {
@@ -49,7 +77,14 @@ namespace CtLists
                         continue;
                 }
 
-                list.m_bottles.Add(bottle);
+                if (bottlesSeen[bottle.Wine] == 0)
+                    continue; // we already added this bottle to the list
+
+                Bottle bottleNew = new Bottle(bottle) {Count = bottlesSeen[bottle.Wine]};
+
+                bottlesSeen[bottle.Wine] = 0;   // we've added it to the list, so don't add again...
+
+                list.m_bottles.Add(bottleNew);
             }
 
             if (fGroupByVarietal)

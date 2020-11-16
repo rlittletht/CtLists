@@ -219,7 +219,9 @@ namespace CtLists
 
                 tw.WriteLine("</BODY></HTML>");
                 tw.Close();
+                MessageBox.Show($"Created WineList data {m_ebOutFile.Text} for {list.BottleCount} bottles");
             }
+
         }
 
         private string s_sAppID = "bfbaffd7-2217-4deb-a85a-4f697e6bdf94";

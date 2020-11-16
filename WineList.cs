@@ -9,11 +9,13 @@ namespace CtLists
         private List<Bottle> m_bottles = new List<Bottle>();
 
         public List<Bottle> Bottles => m_bottles;
-
+        public int BottleCount { get; set; }
         public static WineList BuildFromCellar(Cellar cellar, string[] rgsLocations, string[] rgsColor, bool fGroupByVarietal)
         {
             WineList list = new WineList();
             Dictionary<string, int> bottlesSeen = new Dictionary<string, int>();
+
+            list.BottleCount = 0;
 
             // collect the number of bottles seen
             foreach (Bottle bottle in cellar.Bottles)
@@ -35,6 +37,7 @@ namespace CtLists
                         continue;
                 }
 
+                list.BottleCount++;
                 if (bottlesSeen.ContainsKey(bottle.Wine))
                     bottlesSeen[bottle.Wine]++;
                 else

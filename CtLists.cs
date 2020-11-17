@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using HtmlAgilityPack;
@@ -11,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using NUnit.Framework.Internal.Execution;
+using StatusBox;
 
 namespace CtLists
 {
@@ -19,6 +21,7 @@ namespace CtLists
         private string m_username;
         private string m_password;
         private HttpClient m_client = new HttpClient();
+        private StatusRpt m_srpt;
 
         public CtLists(string username, string password)
         {
@@ -26,6 +29,10 @@ namespace CtLists
             m_password = password;
 
             InitializeComponent();
+
+            m_srpt = new StatusRpt(m_recStatus);
+            m_srpt.SetLogLevel(5);
+            m_srpt.SetFilter(StatusRpt.MSGT.Body);
         }
 
         private Cellar m_cellar;
@@ -107,111 +114,17 @@ namespace CtLists
 
             WineList list = WineList.BuildFromCellar(m_cellar, rgsLocations, rgsColors, fGroupByVarietal);
 
-            if (list.Bottles.Count == 0)
-            {
-                MessageBox.Show("Wine list is empty");
-                return;
-            }
+            list.CreateFile(m_ebOutFile.Text, fGroupByVarietal, rgsColors == null && rgsColors.Length == 1);
+        }
 
-            using (TextWriter tw = new StreamWriter(m_ebOutFile.Text))
-            {
-                tw.WriteLine("<HTML xmlns:w='urn:schemas-microsoft-com:office:word'><meta http-equiv='Content-Type' content='text/html; charset=utf-8'>");
-                tw.WriteLine("<BODY>");
-                string sColorCurrent = "";
-                string sCountryCurrent = "";
-                string sSubRegionAppellationCurrent = "";
+        private CellarTrackerWeb m_ctWeb;
 
-                if (!fGroupByVarietal)
-                {
-                    if ((rgsColors != null && rgsColors.Length == 1) || list.Bottles.Count == 1)
-                        sColorCurrent = list.Bottles[0].Color;
-                }
+        private void DoDrinkWines(object sender, EventArgs e)
+        {
+            if (m_ctWeb == null)
+                m_ctWeb = new CellarTrackerWeb(m_username, m_password, m_srpt);
 
-                foreach (Bottle bottle in list.Bottles)
-                {
-                    if (fGroupByVarietal)
-                    {
-                        if (String.Compare(sColorCurrent, bottle.Varietal, StringComparison.OrdinalIgnoreCase) != 0)
-                        {
-                            sColorCurrent = bottle.Varietal;
-                            tw.WriteLine($"<h1>{sColorCurrent}</h1>");
-                            sCountryCurrent = "";
-                        }
-                    }
-                    else
-                    {
-                        if (String.Compare(sColorCurrent, bottle.Color, StringComparison.OrdinalIgnoreCase) != 0)
-                        {
-                            sColorCurrent = bottle.Color;
-                            tw.WriteLine($"<h1>{sColorCurrent}</h1>");
-                            sCountryCurrent = "";
-                        }
-                    }
-
-                    if (String.Compare(sCountryCurrent, bottle.Country, StringComparison.OrdinalIgnoreCase) != 0)
-                    {
-                        sCountryCurrent = bottle.Country;
-                        sSubRegionAppellationCurrent = "";
-                        tw.WriteLine($"<h2>{sCountryCurrent}</h2>");
-                    }
-
-                    if (String.Compare(sSubRegionAppellationCurrent, bottle.SubRegionAppellation, StringComparison.OrdinalIgnoreCase) != 0)
-                    {
-                        sSubRegionAppellationCurrent = bottle.SubRegionAppellation;
-                        tw.WriteLine($"<h3>{sSubRegionAppellationCurrent}</h3>");
-                    }
-
-                    StringBuilder sbInfo = new StringBuilder();
-
-                    if (bottle.HasValue("CT"))
-                        sbInfo.AppendFormat("CT{0}", bottle.GetValue("CT"));
-
-                    if (bottle.HasValue("Begin"))
-                    {
-                        if (sbInfo.Length > 0)
-                            sbInfo.Append(",");
-                        sbInfo.AppendFormat("{0}-", bottle.GetValue("Begin"));
-                    }
-
-                    if (bottle.HasValue("End"))
-                    {
-                        if (!bottle.HasValue("Begin"))
-                            sbInfo.Append("-");
-
-                        sbInfo.Append(bottle.GetValue("End"));
-                    }
-
-                    if (bottle.Count != 1)
-                    {
-                        if (sbInfo.Length == 0)
-                            sbInfo.AppendFormat("{0}", bottle.Count); // could add "bottles" suffix here...
-                        else
-                            sbInfo.AppendFormat(",{0}", bottle.Count);
-                    }
-
-                    tw.Write("<p class=Wine>");
-                    if (bottle.Wine.Length > 70)
-                    {
-                        // split into two lines
-                        int iSplit = bottle.Wine.LastIndexOf(' ', 70);
-                        tw.Write(bottle.Wine.Substring(0, iSplit));
-                        tw.Write("</p>");
-                        tw.Write("<p class=Wine>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-                        tw.Write(bottle.Wine.Substring(iSplit + 1));
-                    }
-                    else
-                    {
-                        tw.Write(bottle.Wine);
-                    }
-
-                    tw.Write("<w:PTab Alignment=\"RIGHT\" RelativeTo=\"MARGIN\" Leader=\"NONE\">");
-                    tw.Write(sbInfo.ToString());
-                    tw.WriteLine("</w:PTab></p>");
-                }
-
-                tw.WriteLine("</BODY></HTML>");
-                tw.Close();
-            }
+            WineDrinker drinker = new WineDrinker(m_ctWeb);
         }
     }
 }

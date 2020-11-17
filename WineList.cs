@@ -181,9 +181,9 @@ namespace CtLists
                     if (bottle.Count != 1)
                     {
                         if (sbInfo.Length == 0)
-                            sbInfo.AppendFormat("{0}", bottle.Count); // could add "bottles" suffix here...
+                            sbInfo.AppendFormat("({0})", bottle.Count); // could add "bottles" suffix here...
                         else
-                            sbInfo.AppendFormat(",{0}", bottle.Count);
+                            sbInfo.AppendFormat("({0})", bottle.Count);
                     }
 
                     tw.Write("<p class=Wine>");
@@ -208,6 +208,7 @@ namespace CtLists
 
                 tw.WriteLine("</BODY></HTML>");
                 tw.Close();
+                MessageBox.Show($"Created WineList data {sOutputFile} for {BottleCount} bottles");
             }
 
         }

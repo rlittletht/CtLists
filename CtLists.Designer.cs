@@ -37,6 +37,8 @@
             this.button2 = new System.Windows.Forms.Button();
             this.m_fVarietalGrouping = new System.Windows.Forms.CheckBox();
             this.m_ebOutFile = new System.Windows.Forms.TextBox();
+            this.m_pbUpdateSql = new System.Windows.Forms.Button();
+            this.m_cbFixLeadingZeros = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.m_recStatus = new System.Windows.Forms.RichTextBox();
             this.m_pbDrinkWines = new System.Windows.Forms.Button();
@@ -82,7 +84,7 @@
             this.button1.TabIndex = 0;
             this.button1.Text = "Load Cellar";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.DoTestIt);
+            this.button1.Click += new System.EventHandler(this.DoDownloadCellar);
             // 
             // m_lbxLocation
             // 
@@ -135,6 +137,26 @@
             this.m_ebOutFile.TabIndex = 7;
             this.m_ebOutFile.Text = "c:\\temp\\winelist2.html";
             // 
+            // m_pbUpdateSql
+            // 
+            this.m_pbUpdateSql.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.m_pbUpdateSql.Location = new System.Drawing.Point(546, 317);
+            this.m_pbUpdateSql.Name = "m_pbUpdateSql";
+            this.m_pbUpdateSql.Size = new System.Drawing.Size(106, 34);
+            this.m_pbUpdateSql.TabIndex = 9;
+            this.m_pbUpdateSql.Text = "Update SQL";
+            this.m_pbUpdateSql.UseVisualStyleBackColor = true;
+            this.m_pbUpdateSql.Click += new System.EventHandler(this.UpdateSql);
+            // 
+            // checkBox1
+            // 
+            this.m_cbFixLeadingZeros.AutoSize = true;
+            this.m_cbFixLeadingZeros.Location = new System.Drawing.Point(494, 360);
+            this.m_cbFixLeadingZeros.Name = "m_cbFixLeadingZeros";
+            this.m_cbFixLeadingZeros.Size = new System.Drawing.Size(170, 24);
+            this.m_cbFixLeadingZeros.TabIndex = 10;
+            this.m_cbFixLeadingZeros.Text = "Fix Leading Zeroes";
+            this.m_cbFixLeadingZeros.UseVisualStyleBackColor = true;
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -175,6 +197,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(664, 552);
+            this.Controls.Add(this.m_cbFixLeadingZeros);
+            this.Controls.Add(this.m_pbUpdateSql);
             this.Controls.Add(this.m_pbDrinkWines);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(label3);
@@ -202,6 +226,8 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.CheckBox m_fVarietalGrouping;
         private System.Windows.Forms.TextBox m_ebOutFile;
+        private System.Windows.Forms.Button m_pbUpdateSql;
+        private System.Windows.Forms.CheckBox m_cbFixLeadingZeros;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RichTextBox m_recStatus;
         private System.Windows.Forms.Button m_pbDrinkWines;

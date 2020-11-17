@@ -39,9 +39,13 @@
             this.m_ebOutFile = new System.Windows.Forms.TextBox();
             this.m_pbUpdateSql = new System.Windows.Forms.Button();
             this.m_cbFixLeadingZeros = new System.Windows.Forms.CheckBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.m_recStatus = new System.Windows.Forms.RichTextBox();
+            this.m_pbDrinkWines = new System.Windows.Forms.Button();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -84,6 +88,8 @@
             // 
             // m_lbxLocation
             // 
+            this.m_lbxLocation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.m_lbxLocation.CheckOnClick = true;
             this.m_lbxLocation.FormattingEnabled = true;
             this.m_lbxLocation.Location = new System.Drawing.Point(12, 106);
@@ -93,6 +99,8 @@
             // 
             // m_lbxColor
             // 
+            this.m_lbxColor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.m_lbxColor.CheckOnClick = true;
             this.m_lbxColor.FormattingEnabled = true;
             this.m_lbxColor.Location = new System.Drawing.Point(277, 106);
@@ -149,14 +157,50 @@
             this.m_cbFixLeadingZeros.TabIndex = 10;
             this.m_cbFixLeadingZeros.Text = "Fix Leading Zeroes";
             this.m_cbFixLeadingZeros.UseVisualStyleBackColor = true;
+            // groupBox2
+            // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.m_recStatus);
+            this.groupBox2.Location = new System.Drawing.Point(6, 385);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(646, 155);
+            this.groupBox2.TabIndex = 28;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Status";
+            // 
+            // m_recStatus
+            // 
+            this.m_recStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.m_recStatus.Location = new System.Drawing.Point(10, 30);
+            this.m_recStatus.Name = "m_recStatus";
+            this.m_recStatus.Size = new System.Drawing.Size(630, 117);
+            this.m_recStatus.TabIndex = 0;
+            this.m_recStatus.Text = "";
+            // 
+            // m_pbDrinkWines
+            // 
+            this.m_pbDrinkWines.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.m_pbDrinkWines.Location = new System.Drawing.Point(546, 243);
+            this.m_pbDrinkWines.Name = "m_pbDrinkWines";
+            this.m_pbDrinkWines.Size = new System.Drawing.Size(106, 34);
+            this.m_pbDrinkWines.TabIndex = 29;
+            this.m_pbDrinkWines.Text = "Login";
+            this.m_pbDrinkWines.UseVisualStyleBackColor = true;
+            this.m_pbDrinkWines.Click += new System.EventHandler(this.DoDrinkWines);
             // 
             // CtLists
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(664, 396);
+            this.ClientSize = new System.Drawing.Size(664, 552);
             this.Controls.Add(this.m_cbFixLeadingZeros);
             this.Controls.Add(this.m_pbUpdateSql);
+            this.Controls.Add(this.m_pbDrinkWines);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(label3);
             this.Controls.Add(this.m_ebOutFile);
             this.Controls.Add(this.m_fVarietalGrouping);
@@ -168,6 +212,7 @@
             this.Controls.Add(this.button1);
             this.Name = "CtLists";
             this.Text = "Form1";
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -183,6 +228,9 @@
         private System.Windows.Forms.TextBox m_ebOutFile;
         private System.Windows.Forms.Button m_pbUpdateSql;
         private System.Windows.Forms.CheckBox m_cbFixLeadingZeros;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.RichTextBox m_recStatus;
+        private System.Windows.Forms.Button m_pbDrinkWines;
     }
 }
 

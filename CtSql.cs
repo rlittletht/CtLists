@@ -210,7 +210,78 @@ namespace CtLists
             }
 
             sql.Commit();
+        }
 
+        static string s_sSqlBottleQuery = "SELECT ScanCode, Wine, Vintage, Locale, Country, Region, SubRegion, Appelation, Producer, [Type], Color, Category, Varietal, Designation, Vineyard, Score, [Begin], [End], iWine, Notes, Bin, Location, UpdatedCT, Consumed "
+                                          + "FROM upc_wines WHERE DatePart(year, IsNull(Consumed, '1900-01-01 00:00:00.000')) <> 1900";
+
+        void SetValueFromSqlString(Bottle bottle, SqlReader sqlr, int i, string sKey)
+        {
+            if (!sqlr.Reader.IsDBNull(i))
+                bottle.SetValue(sKey, sqlr.Reader.GetString(i));
+        }
+
+        Bottle BottleFromReader(SqlReader sqlr)
+        {
+            Bottle bottle = new Bottle();
+
+            int i = 0;
+
+            SetValueFromSqlString(bottle, sqlr, i++, "Barcode");
+            SetValueFromSqlString(bottle, sqlr, i++, "Wine");
+            SetValueFromSqlString(bottle, sqlr, i++, "Vintage");
+            SetValueFromSqlString(bottle, sqlr, i++, "Locale");
+            SetValueFromSqlString(bottle, sqlr, i++, "Country");
+            SetValueFromSqlString(bottle, sqlr, i++, "Region");
+            SetValueFromSqlString(bottle, sqlr, i++, "SubRegion");
+            SetValueFromSqlString(bottle, sqlr, i++, "Appellation");
+            SetValueFromSqlString(bottle, sqlr, i++, "Producer");
+            SetValueFromSqlString(bottle, sqlr, i++, "Type");
+            SetValueFromSqlString(bottle, sqlr, i++, "Color");
+            SetValueFromSqlString(bottle, sqlr, i++, "Category");
+            SetValueFromSqlString(bottle, sqlr, i++, "Varietal");
+            SetValueFromSqlString(bottle, sqlr, i++, "Designation");
+            SetValueFromSqlString(bottle, sqlr, i++, "Vineyard");
+            SetValueFromSqlString(bottle, sqlr, i++, "Score");
+            SetValueFromSqlString(bottle, sqlr, i++, "Begin");
+            SetValueFromSqlString(bottle, sqlr, i++, "End");
+            SetValueFromSqlString(bottle, sqlr, i++, "iWine");
+            SetValueFromSqlString(bottle, sqlr, i++, "Notes");
+            SetValueFromSqlString(bottle, sqlr, i++, "Bin");
+            SetValueFromSqlString(bottle, sqlr, i++, "Location");
+            bottle.SetValue("UpdatedCT", sqlr.Reader.GetBoolean(i++).ToString());
+            // consumed is a date...
+            if (!sqlr.Reader.IsDBNull(i))
+                bottle.SetValue("Consumed", sqlr.Reader.GetDateTime(i).ToString("MM/dd/yyyy"));
+            i++;
+
+
+            return bottle;
+        }
+        public async Task<List<Bottle>> GetBottlesToDrink(Cellar cellar)
+        {
+            await EnsureSqlConnectionString();
+
+            // get all of the consumed bottles we know about
+            SR sr;
+
+            sr = TCore.Sql.OpenConnection(out Sql sql, sSqlConnectionString);
+
+            if (!sr.Succeeded)
+                throw new Exception($"can't open SQL connection: {sr.Reason}");
+
+            sql.ExecuteReader(s_sSqlBottleQuery, out SqlReader sqlr, null);
+            HashSet<string> hashOurBottles = new HashSet<string>();
+
+            List<Bottle> bottles = new List<Bottle>();
+            while (sqlr.Reader.Read())
+            {
+                bottles.Add(BottleFromReader(sqlr));
+            }
+
+            sqlr.Close();
+
+            return bottles;
         }
     }
 }

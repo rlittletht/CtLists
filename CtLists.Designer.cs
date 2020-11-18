@@ -140,7 +140,7 @@
             // m_pbUpdateSql
             // 
             this.m_pbUpdateSql.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.m_pbUpdateSql.Location = new System.Drawing.Point(546, 317);
+            this.m_pbUpdateSql.Location = new System.Drawing.Point(546, 176);
             this.m_pbUpdateSql.Name = "m_pbUpdateSql";
             this.m_pbUpdateSql.Size = new System.Drawing.Size(106, 34);
             this.m_pbUpdateSql.TabIndex = 9;
@@ -148,7 +148,7 @@
             this.m_pbUpdateSql.UseVisualStyleBackColor = true;
             this.m_pbUpdateSql.Click += new System.EventHandler(this.UpdateSql);
             // 
-            // checkBox1
+            // m_cbFixLeadingZeros
             // 
             this.m_cbFixLeadingZeros.AutoSize = true;
             this.m_cbFixLeadingZeros.Location = new System.Drawing.Point(494, 360);
@@ -157,6 +157,7 @@
             this.m_cbFixLeadingZeros.TabIndex = 10;
             this.m_cbFixLeadingZeros.Text = "Fix Leading Zeroes";
             this.m_cbFixLeadingZeros.UseVisualStyleBackColor = true;
+            // 
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -184,11 +185,11 @@
             // m_pbDrinkWines
             // 
             this.m_pbDrinkWines.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.m_pbDrinkWines.Location = new System.Drawing.Point(546, 243);
+            this.m_pbDrinkWines.Location = new System.Drawing.Point(546, 122);
             this.m_pbDrinkWines.Name = "m_pbDrinkWines";
             this.m_pbDrinkWines.Size = new System.Drawing.Size(106, 34);
             this.m_pbDrinkWines.TabIndex = 29;
-            this.m_pbDrinkWines.Text = "Login";
+            this.m_pbDrinkWines.Text = "Drink Wines";
             this.m_pbDrinkWines.UseVisualStyleBackColor = true;
             this.m_pbDrinkWines.Click += new System.EventHandler(this.DoDrinkWines);
             // 

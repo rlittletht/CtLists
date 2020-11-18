@@ -33,8 +33,8 @@ namespace CtLists
             InitializeComponent();
 
             m_srpt = new StatusRpt(m_recStatus);
-            m_srpt.SetLogLevel(5);
-            m_srpt.SetFilter(StatusRpt.MSGT.Body);
+            //m_srpt.SetLogLevel(5);
+            //m_srpt.SetFilter(StatusRpt.MSGT.Body);
         }
 
         private Cellar m_cellar;
@@ -127,25 +127,39 @@ namespace CtLists
 
         private CtSql m_ctsql;
 
-        private async void UpdateSql(object sender, EventArgs e)
+        void EnsureCtSql()
+        {
+            if (m_ctsql == null)
+                m_ctsql = new CtSql();
+        }
+
+        async Task EnsureCellarDownloaded()
         {
             if (m_cellar == null)
                 await DownloadCellar();
+        }
 
-            if (m_ctsql == null)
-                m_ctsql = new CtSql();
+        private async void UpdateSql(object sender, EventArgs e)
+        {
+            await EnsureCellarDownloaded();
+            EnsureCtSql();
 
             await m_ctsql.UpdateLocalDatabaseFromDownloadedCellar(m_cellar, false);
         }
         
         private CellarTrackerWeb m_ctWeb;
 
-        private void DoDrinkWines(object sender, EventArgs e)
+        private async void DoDrinkWines(object sender, EventArgs e)
         {
+            await EnsureCellarDownloaded();
+
             if (m_ctWeb == null)
                 m_ctWeb = new CellarTrackerWeb(m_username, m_password, m_srpt);
 
             WineDrinker drinker = new WineDrinker(m_ctWeb);
+
+            EnsureCtSql();
+            await drinker.FindAndDrinkWines(m_cellar, m_ctsql);
         }
     }
 }

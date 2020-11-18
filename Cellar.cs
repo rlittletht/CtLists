@@ -13,6 +13,9 @@ namespace CtLists
 
         public Bottle this[string sScanCode] => m_bottles[sScanCode];
 
+        public bool Contains(string sScanCode) => m_bottles.ContainsKey(sScanCode);
+
+
         public static Cellar BuildFromDocument(HtmlDocument doc)
         {
             BottleBuilder builder = new BottleBuilder();

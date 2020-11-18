@@ -183,15 +183,19 @@ namespace CtLists
             }
         }
 
-        public Bottle() // only here for unit tests
+        public Bottle()
         {
-
         }
         
         public Bottle(BottleBuilder builder, HtmlNode row)
         {
             foreach (string s in m_valueKeys)
                 m_bottleValues.Add(s, builder.GetStringFromRow(s, row));
+        }
+
+        public void SetValue(string sKey, string sValue)
+        {
+            m_bottleValues.Add(sKey, sValue);
         }
 
         public string GetValueOrUnk(string sKey)

@@ -150,6 +150,7 @@ namespace CtLists
         public string Color => GetValueOrUnk("Color");
         public string Location => GetValueOrUnk("Location");
         public string Varietal => GetValueOrUnk("Varietal");
+        public string Bin => GetValueOrEmpty("Bin");
 
         public string Wine
         {

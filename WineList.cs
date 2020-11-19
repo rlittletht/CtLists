@@ -24,6 +24,9 @@ namespace CtLists
             // collect the number of bottles seen
             foreach (Bottle bottle in cellar.Bottles)
             {
+                if (bottle.Bin == "BINLESS")
+                    continue;
+
                 if (rgsLocations != null)
                 {
                     bool fMatchLocation = false;
@@ -50,6 +53,9 @@ namespace CtLists
 
             foreach (Bottle bottle in cellar.Bottles)
             {
+                if (bottle.Bin == "BINLESS")
+                    continue;
+
                 if (rgsLocations != null)
                 {
                     bool fMatchLocation = false;
@@ -100,6 +106,23 @@ namespace CtLists
                 list.m_bottles.Sort(Bottle.SortByColor);
 
             return list;
+        }
+
+        string SBinDescriptorFromBin(string sBin)
+        {
+            // bin is 4 digit column, 4 digit row
+            if (sBin.Length != 8)
+                return "";
+
+            string sCol = sBin.Substring(0, 4);
+            string sRow = sBin.Substring(4, 4);
+
+            sRow = sRow.TrimStart(new char[] {'0'});
+            int iCol = int.Parse(sCol);
+
+            string sColChar = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".Substring(iCol - 1, 1);
+
+            return $" ({sColChar}{sRow})";
         }
 
         public void CreateFile(string sOutputFile, bool fGroupByVarietal, bool fSingleColor)
@@ -186,11 +209,14 @@ namespace CtLists
                             sbInfo.AppendFormat("({0})", bottle.Count);
                     }
 
+                    sbInfo.Append(SBinDescriptorFromBin(bottle.Bin));
+
                     tw.Write("<p class=Wine>");
-                    if (bottle.Wine.Length > 70)
+                    int iBreakPoint = 85 - sbInfo.Length;
+                    if (bottle.Wine.Length > iBreakPoint)
                     {
                         // split into two lines
-                        int iSplit = bottle.Wine.LastIndexOf(' ', 70);
+                        int iSplit = bottle.Wine.LastIndexOf(' ', iBreakPoint);
                         tw.Write(bottle.Wine.Substring(0, iSplit));
                         tw.Write("</p>");
                         tw.Write("<p class=Wine>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
@@ -201,9 +227,9 @@ namespace CtLists
                         tw.Write(bottle.Wine);
                     }
 
-                    tw.Write("<w:PTab Alignment=\"RIGHT\" RelativeTo=\"MARGIN\" Leader=\"NONE\">");
+                    tw.Write("<w:PTab Alignment=\"RIGHT\" RelativeTo=\"MARGIN\" Leader=\"NONE\"/>");
                     tw.Write(sbInfo.ToString());
-                    tw.WriteLine("</w:PTab></p>");
+                    tw.WriteLine("</p>");
                 }
 
                 tw.WriteLine("</BODY></HTML>");

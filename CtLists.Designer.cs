@@ -42,6 +42,7 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.m_recStatus = new System.Windows.Forms.RichTextBox();
             this.m_pbDrinkWines = new System.Windows.Forms.Button();
+            this.m_pbReloWines = new System.Windows.Forms.Button();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -140,7 +141,7 @@
             // m_pbUpdateSql
             // 
             this.m_pbUpdateSql.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.m_pbUpdateSql.Location = new System.Drawing.Point(546, 176);
+            this.m_pbUpdateSql.Location = new System.Drawing.Point(546, 212);
             this.m_pbUpdateSql.Name = "m_pbUpdateSql";
             this.m_pbUpdateSql.Size = new System.Drawing.Size(106, 34);
             this.m_pbUpdateSql.TabIndex = 9;
@@ -193,11 +194,23 @@
             this.m_pbDrinkWines.UseVisualStyleBackColor = true;
             this.m_pbDrinkWines.Click += new System.EventHandler(this.DoDrinkWines);
             // 
+            // m_pbReloWines
+            // 
+            this.m_pbReloWines.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.m_pbReloWines.Location = new System.Drawing.Point(546, 162);
+            this.m_pbReloWines.Name = "m_pbReloWines";
+            this.m_pbReloWines.Size = new System.Drawing.Size(106, 34);
+            this.m_pbReloWines.TabIndex = 30;
+            this.m_pbReloWines.Text = "Relo Wines";
+            this.m_pbReloWines.UseVisualStyleBackColor = true;
+            this.m_pbReloWines.Click += new System.EventHandler(this.DoRelocateWines);
+            // 
             // CtLists
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(664, 552);
+            this.Controls.Add(this.m_pbReloWines);
             this.Controls.Add(this.m_cbFixLeadingZeros);
             this.Controls.Add(this.m_pbUpdateSql);
             this.Controls.Add(this.m_pbDrinkWines);
@@ -232,6 +245,7 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RichTextBox m_recStatus;
         private System.Windows.Forms.Button m_pbDrinkWines;
+        private System.Windows.Forms.Button m_pbReloWines;
     }
 }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using mshtml;
 using StatusBox;
 
@@ -107,10 +108,109 @@ namespace CtLists
 
             ihe.click();
             m_wc.FWaitForNavFinish(_s_CtlId_WineInfo_Heading);
-            m_fLoggedIn = true;
             m_srpt.PopLevel();
             m_srpt.AddMessage("Drink complete");
         }
 
+        public static bool FHasWineInTableRowOnPage(IHTMLDocument2 oDoc2, string sBarcode)
+        {
+            IHTMLElementCollection ihec;
+
+            ihec = oDoc2.all.tags("table");
+
+            foreach (IHTMLElement ihe in ihec)
+            {
+                IHTMLTable ihet = ihe as IHTMLTable;
+
+                if (ihe.className == "editList")
+                {
+                    // we have the table, now see if we have a row that matches us.
+                    if (ihet.rows.length < 2)
+                        return false; // need to have at least 2 children
+
+                    IHTMLTableRow iheRow = ihet.rows.item(1) as IHTMLTableRow;
+
+                    if (iheRow.cells.length < 2)
+                        return false; // has to have at least 2 children
+
+                    IHTMLElement iheCell = iheRow.cells.item(1);
+
+                    if (iheCell.innerText == sBarcode)
+                        return true;
+
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+
+        public static bool FHasCorrectBinInTableRowOnPage(IHTMLDocument2 oDoc2, string sBin)
+        {
+            IHTMLElementCollection ihec;
+
+            ihec = oDoc2.all.tags("table");
+
+            foreach (IHTMLElement ihe in ihec)
+            {
+                IHTMLTable ihet = ihe as IHTMLTable;
+
+                if (ihe.className == "editList")
+                {
+                    // we have the table, now see if we have a row that matches us.
+                    if (ihet.rows.length < 2)
+                        return false; // need to have at least 2 children
+
+                    IHTMLTableRow iheRow = ihet.rows.item(1) as IHTMLTableRow;
+
+                    if (iheRow.cells.length < 8)
+                        return false; // has to have at least 2 children
+
+                    IHTMLElement iheCell = iheRow.cells.item(7);
+
+                    if (iheCell.innerText == sBin)
+                        return true;
+
+                    return false;
+                }
+            }
+
+            return false;
+        }
+        private static string _s_InventoryScanPageRoot = @"https://www.cellartracker.com/classic/list.asp?Table=Scan";
+        private static string _s_CtlName_InventoryScanPageRoot_SetBin = @"SetBin";
+        private static string _s_CtlName_InventoryScanPageRoot_Submit_BulkUpdate = @"Bulk Update";
+
+        public void RelocateWine(string sBarcode, string sBin)
+        {
+            EnsureLoggedIn();
+
+            m_srpt.AddMessage($"Relocating wine {sBarcode}...");
+            m_srpt.PushLevel();
+
+            // navigate directly to the relocation page
+            string sPage = $"{_s_InventoryScanPageRoot}&iInventoryList={sBarcode}";
+            if (!m_wc.FNavToPage(sPage) || !m_wc.FWaitForNavFinish((doc2) => FHasWineInTableRowOnPage(doc2, sBarcode)))
+            {
+                throw new Exception("couldn't navigate to cellar page");
+            }
+
+            IHTMLDocument2 oDoc2 = m_wc.Document2;
+
+            WebControl.FSetInputControlText(oDoc2, _s_CtlName_InventoryScanPageRoot_SetBin, sBin, false);
+
+            m_wc.ResetNav();
+            IHTMLElement ihe = WebControl.FindSubmitControlByValueText(oDoc2, _s_CtlName_InventoryScanPageRoot_Submit_BulkUpdate);
+            if (ihe == null)
+                throw new Exception("no submit control?");
+
+            ihe.click();
+            if (!m_wc.FWaitForNavFinish((doc2) => FHasCorrectBinInTableRowOnPage(doc2, sBin)))
+                throw new Exception($"failed to relocate wine {sBarcode} to {sBin}");
+
+            m_srpt.PopLevel();
+            m_srpt.AddMessage("Relocate complete");
+        }
     }
 }

@@ -17,14 +17,13 @@ namespace CtLists
 
         public async Task FindAndDrinkWines(Cellar cellar, CtSql ctsql)
         {
-            List<Bottle> bottles = await ctsql.GetBottlesToDrink(cellar);
+            Dictionary<string, Bottle> bottles = await ctsql.GetBottlesToDrink();
 
             MessageBox.Show($"Bottles we drank: {bottles.Count}");
 
             // now, how many wines are still in the cellar? (these are un-drunk on CT)
-
             int count = 0;
-            foreach (Bottle bottle in bottles)
+            foreach (Bottle bottle in bottles.Values)
             {
                 if (cellar.Contains(bottle.Barcode))
                     count++;
@@ -36,7 +35,7 @@ namespace CtLists
 
             m_ctWeb.EnsureLoggedIn();
             m_ctWeb.Show();
-            foreach (Bottle bottle in bottles)
+            foreach (Bottle bottle in bottles.Values)
             {
                 if (cellar.Contains(bottle.Barcode))
                 {

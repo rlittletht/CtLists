@@ -122,7 +122,7 @@ namespace CtLists
 
             WineList list = WineList.BuildFromCellar(m_cellar, rgsLocations, rgsColors, fGroupByVarietal);
 
-            list.CreateFile(m_ebOutFile.Text, fGroupByVarietal, rgsColors == null && rgsColors.Length == 1);
+            list.CreateFile(m_ebOutFile.Text, fGroupByVarietal, rgsColors == null || rgsColors.Length == 1);
         }
 
         private CtSql m_ctsql;
@@ -160,6 +160,19 @@ namespace CtLists
 
             EnsureCtSql();
             await drinker.FindAndDrinkWines(m_cellar, m_ctsql);
+        }
+
+        private async void DoRelocateWines(object sender, EventArgs e)
+        {
+            await EnsureCellarDownloaded();
+
+            if (m_ctWeb == null)
+                m_ctWeb = new CellarTrackerWeb(m_username, m_password, m_srpt);
+
+            WineMover uhaul = new WineMover(m_ctWeb);
+
+            EnsureCtSql();
+            await uhaul.FindAndRelocateWines(m_cellar, m_ctsql);
         }
     }
 }

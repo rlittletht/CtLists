@@ -213,7 +213,9 @@ namespace CtLists
         }
 
         static string s_sSqlBottleQuery = "SELECT ScanCode, Wine, Vintage, Locale, Country, Region, SubRegion, Appelation, Producer, [Type], Color, Category, Varietal, Designation, Vineyard, Score, [Begin], [End], iWine, Notes, Bin, Location, UpdatedCT, Consumed "
-                                          + "FROM upc_wines WHERE DatePart(year, IsNull(Consumed, '1900-01-01 00:00:00.000')) <> 1900";
+                                          + "FROM upc_wines";
+        static string s_sSqlDrunkWinesWhere = " WHERE DatePart(year, IsNull(Consumed, '1900-01-01 00:00:00.000')) <> 1900";
+        static string s_sSqlBinnedWinesWhere = " WHERE Bin<>'' And DatePart(year, IsNull(Consumed, '1900-01-01 00:00:00.000')) = 1900";
 
         void SetValueFromSqlString(Bottle bottle, SqlReader sqlr, int i, string sKey)
         {
@@ -258,7 +260,9 @@ namespace CtLists
 
             return bottle;
         }
-        public async Task<List<Bottle>> GetBottlesToDrink(Cellar cellar)
+
+
+        public async Task<Dictionary<string, Bottle>> GetBottlesToDrink()
         {
             await EnsureSqlConnectionString();
 
@@ -270,13 +274,42 @@ namespace CtLists
             if (!sr.Succeeded)
                 throw new Exception($"can't open SQL connection: {sr.Reason}");
 
-            sql.ExecuteReader(s_sSqlBottleQuery, out SqlReader sqlr, null);
-            HashSet<string> hashOurBottles = new HashSet<string>();
+            string sQuery = $"{s_sSqlBottleQuery} {s_sSqlDrunkWinesWhere}";
+            sql.ExecuteReader(sQuery, out SqlReader sqlr, null);
 
-            List<Bottle> bottles = new List<Bottle>();
+            Dictionary<string, Bottle> bottles = new Dictionary<string, Bottle>();
             while (sqlr.Reader.Read())
             {
-                bottles.Add(BottleFromReader(sqlr));
+                Bottle bottle = BottleFromReader(sqlr);
+
+                bottles.Add(bottle.Barcode, bottle);
+            }
+
+            sqlr.Close();
+
+            return bottles;
+        }
+
+        public async Task<Dictionary<string, Bottle>> GetBottlesToRelocate()
+        {
+            await EnsureSqlConnectionString();
+
+            // get all of the consumed bottles we know about
+            SR sr;
+
+            sr = TCore.Sql.OpenConnection(out Sql sql, sSqlConnectionString);
+
+            if (!sr.Succeeded)
+                throw new Exception($"can't open SQL connection: {sr.Reason}");
+
+            string sQuery = $"{s_sSqlBottleQuery} {s_sSqlBinnedWinesWhere}";
+            sql.ExecuteReader(sQuery, out SqlReader sqlr, null);
+
+            Dictionary<string, Bottle> bottles = new Dictionary<string, Bottle>();
+            while (sqlr.Reader.Read())
+            {
+                Bottle bottle = BottleFromReader(sqlr);
+                bottles.Add(bottle.Barcode, bottle);
             }
 
             sqlr.Close();

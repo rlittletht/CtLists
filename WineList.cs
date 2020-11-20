@@ -11,14 +11,27 @@ namespace CtLists
     public class WineList
     {
         private List<Bottle> m_bottles = new List<Bottle>();
+        public string ListName { get; set; }
 
         public List<Bottle> Bottles => m_bottles;
         public int BottleCount { get; set; }
+
         public static WineList BuildFromCellar(Cellar cellar, string[] rgsLocations, string[] rgsColor, bool fGroupByVarietal)
         {
             WineList list = new WineList();
             Dictionary<string, int> bottlesSeen = new Dictionary<string, int>();
+            StringBuilder sbListName = new StringBuilder();
 
+            foreach (string sLocation in rgsLocations)
+                sbListName.Append($"_{sLocation}");
+
+            foreach (string sColor in rgsColor)
+                sbListName.Append($"_{sColor}");
+
+            if (fGroupByVarietal)
+                sbListName.Append("_Varietal");
+
+            list.ListName = sbListName.ToString();
             list.BottleCount = 0;
 
             // collect the number of bottles seen
@@ -133,6 +146,8 @@ namespace CtLists
                 return;
             }
 
+            sOutputFile = $"{sOutputFile}{ListName}.html";
+
             using (TextWriter tw = new StreamWriter(sOutputFile))
             {
                 tw.WriteLine("<HTML xmlns:w='urn:schemas-microsoft-com:office:word'><meta http-equiv='Content-Type' content='text/html; charset=utf-8'>");
@@ -212,7 +227,7 @@ namespace CtLists
                     sbInfo.Append(SBinDescriptorFromBin(bottle.Bin));
 
                     tw.Write("<p class=Wine>");
-                    int iBreakPoint = 85 - sbInfo.Length;
+                    int iBreakPoint = 105 - sbInfo.Length;
                     if (bottle.Wine.Length > iBreakPoint)
                     {
                         // split into two lines
@@ -234,7 +249,7 @@ namespace CtLists
 
                 tw.WriteLine("</BODY></HTML>");
                 tw.Close();
-                MessageBox.Show($"Created WineList data {sOutputFile} for {BottleCount} bottles");
+                MessageBox.Show($"Created WineList {sOutputFile} for {BottleCount} bottles");
             }
 
         }

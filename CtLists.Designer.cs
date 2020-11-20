@@ -154,7 +154,7 @@
             this.m_ebOutFile.Name = "m_ebOutFile";
             this.m_ebOutFile.Size = new System.Drawing.Size(299, 20);
             this.m_ebOutFile.TabIndex = 7;
-            this.m_ebOutFile.Text = "c:\\temp\\winelist2.html";
+            this.m_ebOutFile.Text = "c:\\temp\\winelist";
             // 
             // m_pbUpdateSql
             // 

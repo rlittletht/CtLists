@@ -196,14 +196,9 @@ namespace CtLists
             return t.Result;
         }
 
-        /* F  W A I T  F O R  N A V  F I N I S H */
-        /*----------------------------------------------------------------------------
-        	%%Function: FWaitForNavFinish
-        	%%Qualified: ArbWeb.ArbWebControl.FWaitForNavFinish
-        	%%Contact: rlittle
-        	
-        ----------------------------------------------------------------------------*/
-        public bool FWaitForNavFinish(string sidWaitFor = null)
+        public delegate bool FFoundMarkerOnPage(IHTMLDocument2 oDoc2);
+
+        public bool FWaitForNavFinish(FFoundMarkerOnPage delFoundMarker)
         {
             long s = 0;
 
@@ -219,16 +214,8 @@ namespace CtLists
                 Application.DoEvents();
                 if (m_wbc.ReadyState == WebBrowserReadyState.Complete || m_fNavDone)
                 {
-                    if (sidWaitFor != null)
-                    {
-                        // we are being asked to wait for an element to exist
-                        if (FCheckForControl((IHTMLDocument2) m_wbc.Document.DomDocument, sidWaitFor))
-                            break;
-                    }
-                    else
-                    {
+                    if (delFoundMarker == null || delFoundMarker((IHTMLDocument2) m_wbc.Document.DomDocument))
                         break;
-                    }
                 }
 
                 Thread.Sleep(50);
@@ -261,7 +248,7 @@ namespace CtLists
                 return f;
                 }
 #endif
-            if (s > 20000)
+            if (s > 200)
             {
                 m_wbc.Stop();
                 m_wbc.Visible = true;
@@ -269,6 +256,26 @@ namespace CtLists
             }
 
             return true;
+        }
+
+
+        /* F  W A I T  F O R  N A V  F I N I S H */
+        /*----------------------------------------------------------------------------
+        	%%Function: FWaitForNavFinish
+        	%%Qualified: ArbWeb.ArbWebControl.FWaitForNavFinish
+        	%%Contact: rlittle
+        	
+        ----------------------------------------------------------------------------*/
+        public bool FWaitForNavFinish(string sidWaitFor = null)
+        {
+            return FWaitForNavFinish(
+                (IHTMLDocument2 oDoc2) =>
+                {
+                    if (sidWaitFor == null)
+                        return true;
+
+                    return FCheckForControl(oDoc2, sidWaitFor);
+                });
         }
 
         /* R E F R E S H  P A G E */

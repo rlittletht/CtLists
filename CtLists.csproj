@@ -133,9 +133,13 @@
     <Reference Include="TCore.Exceptions, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\TCore.Exceptions.1.1.0\lib\netstandard2.0\TCore.Exceptions.dll</HintPath>
     </Reference>
+    <Reference Include="TCore.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\TCore.UI.1.0.0\lib\net452\TCore.UI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CellarTrackerWeb.cs" />
+    <Compile Include="CtSql.cs" />
     <Compile Include="statusbox.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WebControl.cs">
@@ -157,6 +161,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WineDrinker.cs" />
     <Compile Include="WineList.cs" />
+    <Compile Include="WineMover.cs" />
     <EmbeddedResource Include="WebControl.resx">
       <DependentUpon>WebControl.cs</DependentUpon>
     </EmbeddedResource>

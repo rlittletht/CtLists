@@ -15,6 +15,7 @@ using NUnit.Framework.Internal.Execution;
 using TCore.KeyVault;
 using TCore;
 using StatusBox;
+using TCore.UI;
 
 namespace CtLists
 {
@@ -31,10 +32,17 @@ namespace CtLists
             m_password = password;
 
             InitializeComponent();
+            m_headingWineList.Text = "";
+            m_headingCellarTrackerUpdate.Text = "";
 
             m_srpt = new StatusRpt(m_recStatus);
             //m_srpt.SetLogLevel(5);
             //m_srpt.SetFilter(StatusRpt.MSGT.Body);
+        }
+
+        private void RenderHeadingLine(object sender, PaintEventArgs e)
+        {
+            RenderSupp.RenderHeadingLine(sender, e);
         }
 
         private Cellar m_cellar;

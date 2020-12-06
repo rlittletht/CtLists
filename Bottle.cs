@@ -122,6 +122,25 @@ namespace CtLists
             m_countBottles++;
         }
 
+        public bool IsConsumed
+        {
+            get
+            {
+                if (!HasValue("Consumed"))
+                    return false;
+
+                string sConsumed = GetValue("Consumed");
+
+                if (!DateTime.TryParse(sConsumed, out DateTime dttm))
+                    return false;
+
+                if (dttm.Year < 2000)
+                    return false;
+
+                return true;
+            }
+        }
+
         public int Count { get; set; }
 
         public bool HasValue(string sKey)

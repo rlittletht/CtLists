@@ -14,11 +14,13 @@ namespace CtLists
             m_ctWeb = ctWeb;
         }
 
-        public async Task FindAndRelocateWines(Cellar cellar, CtSql ctsql)
+        public async Task<int> FindAndRelocateWines(Cellar cellar, CtSql ctsql, bool fPreflightOnly)
         {
+            // NOTE: this list INCLUDES bottles that are consumed. be careful.
             Dictionary<string, Bottle> bottles = await ctsql.GetBottlesToRelocate();
 
-            MessageBox.Show($"Bottles we have binned (and not drunk): {bottles.Count}");
+            if (!fPreflightOnly)
+                MessageBox.Show($"Bottles we have binned: {bottles.Count}");
 
             // how many of these don't match cellartracker?
             Dictionary<string, Bottle> bottlesToUpdateOnCT = new Dictionary<string, Bottle>();
@@ -26,6 +28,9 @@ namespace CtLists
             // find bottles in our list that don't match CT
             foreach (Bottle bottle in bottles.Values)
             {
+                if (bottle.IsConsumed)
+                    continue;
+
                 if (cellar.Contains(bottle.Barcode))
                 {
                     if (cellar[bottle.Barcode].Bin != bottle.Bin)
@@ -41,7 +46,7 @@ namespace CtLists
             // now go through all the bottles on CT that have a Bin and make sure its in our inventory
             foreach (Bottle bottle in cellar.Bottles)
             {
-                if (string.IsNullOrEmpty(bottle.Bin))
+                if (string.IsNullOrEmpty(bottle.Bin) || bottle.Bin == "BINLESS")
                     continue;
 
                 if (bottles.ContainsKey(bottle.Barcode))
@@ -68,14 +73,18 @@ namespace CtLists
                 }
             }
 
-            MessageBox.Show($"There are {bottlesToUpdateOnCT.Count} bottles to relocate on CellarTracker");
+            if (!fPreflightOnly)
+            {
+                MessageBox.Show($"There are {bottlesToUpdateOnCT.Count} bottles to relocate on CellarTracker");
 
-            m_ctWeb.EnsureLoggedIn();
-            m_ctWeb.Show();
+                m_ctWeb.EnsureLoggedIn();
+                m_ctWeb.Show();
 
-            foreach (Bottle bottle in bottlesToUpdateOnCT.Values)
-                m_ctWeb.RelocateWine(bottle.Barcode, bottle.Bin);
+                foreach (Bottle bottle in bottlesToUpdateOnCT.Values)
+                    m_ctWeb.RelocateWine(bottle.Barcode, bottle.Bin);
+            }
 
+            return bottlesToUpdateOnCT.Count;
         }
     }
 }

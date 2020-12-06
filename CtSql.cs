@@ -49,7 +49,7 @@ namespace CtLists
 
         }
 
-        public async Task UpdateLocalDatabaseFromDownloadedCellar(Cellar cellar, bool fFixLeadingZeros)
+        public async Task<(int, int, int, int)> UpdateLocalDatabaseFromDownloadedCellar(Cellar cellar, bool fFixLeadingZeros, bool fPreflightOnly)
         { 
             await EnsureSqlConnectionString();
 
@@ -132,90 +132,97 @@ namespace CtLists
                     }
                     else
                     {
-                        hashBottlesOnlyInOurCellar.Add(s);
+                        // CT only tells us about undrunk wines...so maybe this is one we already drank?
+                        // or its one that we knew about at one point, but not later...
+                        // let's not worry about them
+                        // hashBottlesOnlyInOurCellar.Add(s);
                     }
                 }
             }
 
-            // at this point, we know what we have to add to our cellar, and what we have to fix
-            MessageBox.Show(
-                $"BrokenZeros1: {hashBottlesWithMissingLeadingZero.Count}, BrokenZeros2: {hashBottlesWithMissingLeadingZero2.Count}, BrokenZeros3: {hashBottlesWithMissingLeadingZero3.Count}. {hashBottlesOnlyInOurCellar.Count} only in our cellar, and {hashBottlesOnlyInCellarTracker.Count} only in CellarTracker");
-
-
-            if (fFixLeadingZeros && (hashBottlesWithMissingLeadingZero.Count > 0 || hashBottlesWithMissingLeadingZero2.Count > 0))
+            if (!fPreflightOnly)
             {
-                FixLeadingZeros(sql, hashBottlesWithMissingLeadingZero, hashBottlesWithMissingLeadingZero2);
+                // at this point, we know what we have to add to our cellar, and what we have to fix
+                MessageBox.Show(
+                    $"BrokenZeros1: {hashBottlesWithMissingLeadingZero.Count}, BrokenZeros2: {hashBottlesWithMissingLeadingZero2.Count}, BrokenZeros3: {hashBottlesWithMissingLeadingZero3.Count}. {hashBottlesOnlyInOurCellar.Count} only in our cellar, and {hashBottlesOnlyInCellarTracker.Count} only in CellarTracker");
+
+
+                if (fFixLeadingZeros && (hashBottlesWithMissingLeadingZero.Count > 0 || hashBottlesWithMissingLeadingZero2.Count > 0))
+                {
+                    FixLeadingZeros(sql, hashBottlesWithMissingLeadingZero, hashBottlesWithMissingLeadingZero2);
+                }
+
+                // now add any bottles that haven't been added yet...
+                //
+                sql.BeginTransaction();
+
+                foreach (string s in hashBottlesOnlyInCellarTracker)
+                {
+                    Bottle bottle = cellar[s];
+
+                    string sInsert =
+                        "insert into upc_wines (ScanCode, Wine, Vintage, Locale, Country, Region, SubRegion, Appelation, Producer, [Type], Color, Category, Varietal, Designation, Vineyard, Score, [Begin], [End], iWine, Consumed, Notes, UpdatedCT, Bin, Location)"
+                        + " VALUES ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}','{17}','{18}','{19}','{20}',{21},'{22}','{23}')";
+
+                    string sConsumed = bottle.GetValueOrEmpty("Consumed");
+
+                    if (sConsumed.Length == 0)
+                        sConsumed = "1900-01-01 00";
+
+                    string sUpdatedCT = bottle.GetValueOrEmpty("UpdatedCT");
+
+                    if (sUpdatedCT.Length == 0)
+                        sUpdatedCT = "0";
+
+                    string sQuery = String.Format(
+                        sInsert,
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Barcode")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Wine")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Vintage")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Locale")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Country")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Region")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("SubRegion")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Appellation")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Producer")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Type")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Color")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Category")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Varietal")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Designation")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Vineyard")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Score")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Begin")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("End")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("iWine")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Consumed")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Notes")),
+                        Sql.Sqlify(sUpdatedCT),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Bin")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Location")));
+
+                    string sResult = sql.SExecuteScalar(sQuery);
+
+                    sQuery = String.Format(
+                        "insert into upc_codes (ScanCode, DescriptionShort, FirstScanDate,LastScanDate) VALUES ('{0}','{1}','{2}','{3}')",
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Barcode")),
+                        Sql.Sqlify(bottle.GetValueOrEmpty("Wine")),
+                        "1900-01-01 00:00:00.000",
+                        "1900-01-01 00:00:00.000");
+
+                    sResult = sql.SExecuteScalar(sQuery);
+                }
+                sql.Commit();
             }
+            return (hashBottlesWithMissingLeadingZero.Count, hashBottlesWithMissingLeadingZero2.Count, hashBottlesOnlyInOurCellar.Count, hashBottlesOnlyInCellarTracker.Count);
 
-            // now add any bottles that haven't been added yet...
-            //
-            sql.BeginTransaction();
 
-            foreach (string s in hashBottlesOnlyInCellarTracker)
-            {
-                Bottle bottle = cellar[s];
-
-                string sInsert =
-                    "insert into upc_wines (ScanCode, Wine, Vintage, Locale, Country, Region, SubRegion, Appelation, Producer, [Type], Color, Category, Varietal, Designation, Vineyard, Score, [Begin], [End], iWine, Consumed, Notes, UpdatedCT, Bin, Location)"
-                    + " VALUES ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}','{17}','{18}','{19}','{20}',{21},'{22}','{23}')";
-
-                string sConsumed = bottle.GetValueOrEmpty("Consumed");
-
-                if (sConsumed.Length == 0)
-                    sConsumed = "1900-01-01 00";
-
-                string sUpdatedCT = bottle.GetValueOrEmpty("UpdatedCT");
-
-                if (sUpdatedCT.Length == 0)
-                    sUpdatedCT = "0";
-
-                string sQuery = String.Format(
-                    sInsert,
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Barcode")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Wine")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Vintage")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Locale")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Country")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Region")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("SubRegion")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Appellation")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Producer")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Type")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Color")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Category")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Varietal")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Designation")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Vineyard")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Score")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Begin")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("End")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("iWine")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Consumed")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Notes")),
-                    Sql.Sqlify(sUpdatedCT),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Bin")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Location")));
-
-                string sResult = sql.SExecuteScalar(sQuery);
-
-                sQuery = String.Format(
-                    "insert into upc_codes (ScanCode, DescriptionShort, FirstScanDate,LastScanDate) VALUES ('{0}','{1}','{2}','{3}')",
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Barcode")),
-                    Sql.Sqlify(bottle.GetValueOrEmpty("Wine")),
-                    "1900-01-01 00:00:00.000",
-                    "1900-01-01 00:00:00.000");
-
-                sResult = sql.SExecuteScalar(sQuery);
-
-            }
-
-            sql.Commit();
         }
 
         static string s_sSqlBottleQuery = "SELECT ScanCode, Wine, Vintage, Locale, Country, Region, SubRegion, Appelation, Producer, [Type], Color, Category, Varietal, Designation, Vineyard, Score, [Begin], [End], iWine, Notes, Bin, Location, UpdatedCT, Consumed "
                                           + "FROM upc_wines";
         static string s_sSqlDrunkWinesWhere = " WHERE DatePart(year, IsNull(Consumed, '1900-01-01 00:00:00.000')) <> 1900";
-        static string s_sSqlBinnedWinesWhere = " WHERE Bin<>'' And DatePart(year, IsNull(Consumed, '1900-01-01 00:00:00.000')) = 1900";
+        static string s_sSqlBinnedWinesWhere = " WHERE Bin<>''"; // And DatePart(year, IsNull(Consumed, '1900-01-01 00:00:00.000')) = 1900";
 
         void SetValueFromSqlString(Bottle bottle, SqlReader sqlr, int i, string sKey)
         {

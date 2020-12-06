@@ -152,7 +152,7 @@ namespace CtLists
             await EnsureCellarDownloaded();
             EnsureCtSql();
 
-            await m_ctsql.UpdateLocalDatabaseFromDownloadedCellar(m_cellar, false);
+            await m_ctsql.UpdateLocalDatabaseFromDownloadedCellar(m_cellar, false, false);
         }
         
         private CellarTrackerWeb m_ctWeb;
@@ -167,7 +167,7 @@ namespace CtLists
             WineDrinker drinker = new WineDrinker(m_ctWeb);
 
             EnsureCtSql();
-            await drinker.FindAndDrinkWines(m_cellar, m_ctsql);
+            await drinker.FindAndDrinkWines(m_cellar, m_ctsql, false);
         }
 
         private async void DoRelocateWines(object sender, EventArgs e)
@@ -180,7 +180,49 @@ namespace CtLists
             WineMover uhaul = new WineMover(m_ctWeb);
 
             EnsureCtSql();
-            await uhaul.FindAndRelocateWines(m_cellar, m_ctsql);
+            await uhaul.FindAndRelocateWines(m_cellar, m_ctsql, false);
+        }
+
+        private async void DoSyncCheck(object sender, EventArgs e)
+        {
+            await EnsureCellarDownloaded();
+
+            WineMover uhaul = new WineMover(null);
+            WineDrinker drinker = new WineDrinker(null);
+
+            EnsureCtSql();
+
+            int leadingZero1, leadingZero2, inOurs, inTheirs;
+
+            (leadingZero1, leadingZero2, inOurs, inTheirs) = await m_ctsql.UpdateLocalDatabaseFromDownloadedCellar(m_cellar, true, true);
+
+            int cNeedToDrink = await drinker.FindAndDrinkWines(m_cellar, m_ctsql, true);
+            int cNeedToMove = await uhaul.FindAndRelocateWines(m_cellar, m_ctsql, true);
+
+            StringBuilder sb = new StringBuilder();
+
+            if (cNeedToDrink > 0)
+                sb.Append($"Need to drink: {cNeedToDrink}. RUN DRINKWINES! ");
+
+            if (cNeedToMove > 0)
+                sb.Append($"Need to move: {cNeedToDrink}. RUN RELOCATE! ");
+
+            if (leadingZero1 > 0)
+                sb.Append($"Leading zeroes broken: {leadingZero1}. FIX LEADING ZEROS! ");
+
+            if (leadingZero2 > 0)
+                sb.Append($"Leading double zeroes broken: {leadingZero2}. FIX LEADING ZEROS! ");
+
+            if (inOurs > 0)
+                sb.Append($"In our celler, but not CellarTracker: {inOurs}. DON'T KNOW HOW TO FIX!! ");
+
+            if (inTheirs > 0)
+                sb.Append($"In CellarTracker but not ours: {inTheirs}. RUN UPDATELOCAL!");
+
+            if (sb.Length == 0)
+                MessageBox.Show("Everything is up to date!!");
+            else
+                MessageBox.Show(sb.ToString());
         }
     }
 }

@@ -45,6 +45,7 @@
             this.m_pbDrinkWines = new System.Windows.Forms.Button();
             this.m_pbReloWines = new System.Windows.Forms.Button();
             this.m_headingCellarTrackerUpdate = new System.Windows.Forms.Label();
+            this.m_pbSyncCheck = new System.Windows.Forms.Button();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -159,12 +160,12 @@
             // m_pbUpdateSql
             // 
             this.m_pbUpdateSql.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.m_pbUpdateSql.Location = new System.Drawing.Point(201, 274);
+            this.m_pbUpdateSql.Location = new System.Drawing.Point(215, 274);
             this.m_pbUpdateSql.Margin = new System.Windows.Forms.Padding(2);
             this.m_pbUpdateSql.Name = "m_pbUpdateSql";
-            this.m_pbUpdateSql.Size = new System.Drawing.Size(85, 22);
+            this.m_pbUpdateSql.Size = new System.Drawing.Size(71, 22);
             this.m_pbUpdateSql.TabIndex = 9;
-            this.m_pbUpdateSql.Text = "Sync With CT";
+            this.m_pbUpdateSql.Text = "Sync Down";
             this.m_pbUpdateSql.UseVisualStyleBackColor = true;
             this.m_pbUpdateSql.Click += new System.EventHandler(this.UpdateSql);
             // 
@@ -241,11 +242,24 @@
             this.m_headingCellarTrackerUpdate.Text = "CellarTracker Update";
             this.m_headingCellarTrackerUpdate.Paint += new System.Windows.Forms.PaintEventHandler(this.RenderHeadingLine);
             // 
+            // m_pbSyncCheck
+            // 
+            this.m_pbSyncCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.m_pbSyncCheck.Location = new System.Drawing.Point(137, 274);
+            this.m_pbSyncCheck.Margin = new System.Windows.Forms.Padding(2);
+            this.m_pbSyncCheck.Name = "m_pbSyncCheck";
+            this.m_pbSyncCheck.Size = new System.Drawing.Size(74, 22);
+            this.m_pbSyncCheck.TabIndex = 33;
+            this.m_pbSyncCheck.Text = "Sync Check";
+            this.m_pbSyncCheck.UseVisualStyleBackColor = true;
+            this.m_pbSyncCheck.Click += new System.EventHandler(this.DoSyncCheck);
+            // 
             // CtLists
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(450, 492);
+            this.Controls.Add(this.m_pbSyncCheck);
             this.Controls.Add(this.m_headingCellarTrackerUpdate);
             this.Controls.Add(this.m_headingWineList);
             this.Controls.Add(this.m_pbReloWines);
@@ -287,6 +301,7 @@
         private System.Windows.Forms.Button m_pbReloWines;
         private System.Windows.Forms.Label m_headingWineList;
         private System.Windows.Forms.Label m_headingCellarTrackerUpdate;
+        private System.Windows.Forms.Button m_pbSyncCheck;
     }
 }
 

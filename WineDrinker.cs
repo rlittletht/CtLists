@@ -36,7 +36,7 @@ namespace CtLists
                 // m_ctWeb.Show();
 
                 m_ctWeb.EnsureLoggedIn();
-                m_ctWeb.Show();
+                // m_ctWeb.Show();
                 foreach (Bottle bottle in bottles.Values)
                 {
                     if (cellar.Contains(bottle.Barcode))

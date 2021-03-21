@@ -133,8 +133,14 @@
     <Reference Include="TCore.Exceptions, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\TCore.Exceptions.1.1.0\lib\netstandard2.0\TCore.Exceptions.dll</HintPath>
     </Reference>
+    <Reference Include="TCore.StatusBox, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\TCore.StatusBox.1.0.0\lib\net462\TCore.StatusBox.dll</HintPath>
+    </Reference>
     <Reference Include="TCore.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\TCore.UI.1.0.0\lib\net452\TCore.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="WebDriver, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Selenium.WebDriver.4.0.0-beta2\lib\net47\WebDriver.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -142,12 +148,6 @@
     <Compile Include="CtSql.cs" />
     <Compile Include="statusbox.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="WebControl.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WebControl.designer.cs">
-      <DependentUpon>WebControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Bottle.cs" />
     <Compile Include="Cellar.cs" />
     <Compile Include="CtLists.cs">
@@ -162,9 +162,6 @@
     <Compile Include="WineDrinker.cs" />
     <Compile Include="WineList.cs" />
     <Compile Include="WineMover.cs" />
-    <EmbeddedResource Include="WebControl.resx">
-      <DependentUpon>WebControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="CtLists.resx">
       <DependentUpon>CtLists.cs</DependentUpon>
     </EmbeddedResource>
@@ -195,6 +192,10 @@
     <ProjectReference Include="..\liblet\cs\TCore.Util\TCore.Util.csproj">
       <Project>{59868345-bc40-4771-a4d7-7c6a763663f0}</Project>
       <Name>TCore.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\liblet\cs\TCore.WebControl\TCore.WebControl.csproj">
+      <Project>{84b4e064-d576-4f70-b54a-3899e50865f4}</Project>
+      <Name>TCore.WebControl</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

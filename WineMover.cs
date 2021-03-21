@@ -78,7 +78,7 @@ namespace CtLists
                 MessageBox.Show($"There are {bottlesToUpdateOnCT.Count} bottles to relocate on CellarTracker");
 
                 m_ctWeb.EnsureLoggedIn();
-                m_ctWeb.Show();
+                // m_ctWeb.Show();
 
                 foreach (Bottle bottle in bottlesToUpdateOnCT.Values)
                     m_ctWeb.RelocateWine(bottle.Barcode, bottle.Bin);

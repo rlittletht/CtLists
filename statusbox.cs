@@ -5,7 +5,7 @@ using System.Windows.Forms;
 //using Microsoft.Office.Interop.Excel;
 using Application = System.Windows.Forms.Application;
 
-
+#if false
 namespace StatusBox
 {
 	public class StatusRpt
@@ -351,3 +351,4 @@ namespace StatusBox
 		}
 }
 
+#endif

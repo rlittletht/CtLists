@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CtLists", "CtLists.csproj",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCore.Util", "..\liblet\cs\TCore.Util\TCore.Util.csproj", "{59868345-BC40-4771-A4D7-7C6A763663F0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Liblets", "Liblets", "{0FD165B9-0DEC-4CCD-911D-60D3E5042892}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCore.WebControl", "..\liblet\cs\TCore.WebControl\TCore.WebControl.csproj", "{84B4E064-D576-4F70-B54A-3899E50865F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +25,16 @@ Global
 		{59868345-BC40-4771-A4D7-7C6A763663F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59868345-BC40-4771-A4D7-7C6A763663F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59868345-BC40-4771-A4D7-7C6A763663F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84B4E064-D576-4F70-B54A-3899E50865F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84B4E064-D576-4F70-B54A-3899E50865F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84B4E064-D576-4F70-B54A-3899E50865F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84B4E064-D576-4F70-B54A-3899E50865F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{84B4E064-D576-4F70-B54A-3899E50865F4} = {0FD165B9-0DEC-4CCD-911D-60D3E5042892}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9308779D-FD0A-4A68-8E13-BA3D47ADCA0F}

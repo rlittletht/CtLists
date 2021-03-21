@@ -14,7 +14,7 @@ using System.Windows.Forms;
 using NUnit.Framework.Internal.Execution;
 using TCore.KeyVault;
 using TCore;
-using StatusBox;
+using TCore.StatusBox;
 using TCore.UI;
 
 namespace CtLists
@@ -24,7 +24,7 @@ namespace CtLists
         private string m_username;
         private string m_password;
         private HttpClient m_client = new HttpClient();
-        private StatusRpt m_srpt;
+        private StatusBox m_srpt;
 
         public CtLists(string username, string password)
         {
@@ -35,7 +35,7 @@ namespace CtLists
             m_headingWineList.Text = "";
             m_headingCellarTrackerUpdate.Text = "";
 
-            m_srpt = new StatusRpt(m_recStatus);
+            m_srpt = new StatusBox(m_recStatus);
             //m_srpt.SetLogLevel(5);
             //m_srpt.SetFilter(StatusRpt.MSGT.Body);
         }
@@ -162,7 +162,7 @@ namespace CtLists
             await EnsureCellarDownloaded();
 
             if (m_ctWeb == null)
-                m_ctWeb = new CellarTrackerWeb(m_username, m_password, m_srpt);
+                m_ctWeb = new CellarTrackerWeb(m_username, m_password, m_srpt, true);
 
             WineDrinker drinker = new WineDrinker(m_ctWeb);
 
@@ -175,7 +175,7 @@ namespace CtLists
             await EnsureCellarDownloaded();
 
             if (m_ctWeb == null)
-                m_ctWeb = new CellarTrackerWeb(m_username, m_password, m_srpt);
+                m_ctWeb = new CellarTrackerWeb(m_username, m_password, m_srpt, true);
 
             WineMover uhaul = new WineMover(m_ctWeb);
 

@@ -21,7 +21,7 @@ namespace CtLists
         {
         }
 
-        async Task EnsureSqlConnectionString()
+        public async Task EnsureSqlConnectionString()
         {
             if (m_clientKeyVault == null)
                 m_clientKeyVault = new Client(m_sAppTenant, s_sAppID);

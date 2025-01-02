@@ -36,6 +36,8 @@ namespace CtLists
             m_headingCellarTrackerUpdate.Text = "";
 
             m_srpt = new StatusRpt(m_recStatus);
+            EnsureCtSql();
+            m_ctsql.EnsureSqlConnectionString();
             //m_srpt.SetLogLevel(5);
             //m_srpt.SetFilter(StatusRpt.MSGT.Body);
         }
@@ -47,25 +49,36 @@ namespace CtLists
 
         private Cellar m_cellar;
 
+        string ReadHtmlFromFile(string fileName)
+        {
+            using (TextReader tr = new StreamReader(fileName))
+            {
+                string sHtml = tr.ReadToEnd();
+                tr.Close();
+                return sHtml;
+            }
+        }
+
         private async Task DownloadCellar()
         {
-            string sRequest = $"https://www.cellartracker.com/xlquery.asp?table=Inventory&User={m_username}&Password={m_password}";
-            String sHtml = null;
+//            string sRequest = $"https://www.cellartracker.com/xlquery.asp?table=Inventory&User={m_username}&Password={m_password}";
+//            String sHtml = null;
+//
+//            try
+//            {
+//                HttpResponseMessage response = await m_client.GetAsync(sRequest);
+//
+//                response.EnsureSuccessStatusCode();
+//
+//                sHtml = await response.Content.ReadAsStringAsync();
+//            }
+//            catch (Exception exc)
+//            {
+//                MessageBox.Show($"Couldn't get stream from cellartracker: {exc.Message}");
+//                return;
+//            }
 
-            try
-            {
-                HttpResponseMessage response = await m_client.GetAsync(sRequest);
-
-                response.EnsureSuccessStatusCode();
-
-                sHtml = await response.Content.ReadAsStringAsync();
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show($"Couldn't get stream from cellartracker: {exc.Message}");
-                return;
-            }
-
+            string sHtml = ReadHtmlFromFile("c:\\temp\\latestmanual.html");
             HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
 
             doc.LoadHtml(sHtml);
@@ -205,7 +218,7 @@ namespace CtLists
                 sb.Append($"Need to drink: {cNeedToDrink}. RUN DRINKWINES! ");
 
             if (cNeedToMove > 0)
-                sb.Append($"Need to move: {cNeedToDrink}. RUN RELOCATE! ");
+                sb.Append($"Need to move: {cNeedToMove}. RUN RELOCATE! ");
 
             if (leadingZero1 > 0)
                 sb.Append($"Leading zeroes broken: {leadingZero1}. FIX LEADING ZEROS! ");

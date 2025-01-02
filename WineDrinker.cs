@@ -33,7 +33,7 @@ namespace CtLists
             {
                 MessageBox.Show($"There are {count} bottles to drink on CellarTracker");
 
-                // m_ctWeb.Show();
+                m_ctWeb.Show();
 
                 m_ctWeb.EnsureLoggedIn();
                 m_ctWeb.Show();

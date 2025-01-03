@@ -14,7 +14,7 @@ using System.Windows.Forms;
 using NUnit.Framework.Internal.Execution;
 using TCore.KeyVault;
 using TCore;
-using StatusBox;
+using TCore.StatusBox;
 using TCore.UI;
 
 namespace CtLists
@@ -24,7 +24,7 @@ namespace CtLists
         private string m_username;
         private string m_password;
         private HttpClient m_client = new HttpClient();
-        private StatusRpt m_srpt;
+        private StatusBox m_srpt;
 
         public CtLists(string username, string password)
         {
@@ -35,7 +35,7 @@ namespace CtLists
             m_headingWineList.Text = "";
             m_headingCellarTrackerUpdate.Text = "";
 
-            m_srpt = new StatusRpt(m_recStatus);
+            m_srpt = new StatusBox(m_recStatus);
             EnsureCtSql();
             m_ctsql.EnsureSqlConnectionString();
             //m_srpt.SetLogLevel(5);
@@ -61,24 +61,24 @@ namespace CtLists
 
         private async Task DownloadCellar()
         {
-//            string sRequest = $"https://www.cellartracker.com/xlquery.asp?table=Inventory&User={m_username}&Password={m_password}";
-//            String sHtml = null;
-//
-//            try
-//            {
-//                HttpResponseMessage response = await m_client.GetAsync(sRequest);
-//
-//                response.EnsureSuccessStatusCode();
-//
-//                sHtml = await response.Content.ReadAsStringAsync();
-//            }
-//            catch (Exception exc)
-//            {
-//                MessageBox.Show($"Couldn't get stream from cellartracker: {exc.Message}");
-//                return;
-//            }
+            string sRequest = $"https://www.cellartracker.com/xlquery.asp?table=Inventory&User={m_username}&Password={m_password}";
+            String sHtml = null;
 
-            string sHtml = ReadHtmlFromFile("c:\\temp\\latestmanual.html");
+            try
+            {
+                HttpResponseMessage response = await m_client.GetAsync(sRequest);
+
+                response.EnsureSuccessStatusCode();
+
+                sHtml = await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show($"Couldn't get stream from cellartracker: {exc.Message}");
+                return;
+            }
+
+//            string sHtml = ReadHtmlFromFile("c:\\temp\\latestmanual.html");
             HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
 
             doc.LoadHtml(sHtml);
@@ -236,6 +236,11 @@ namespace CtLists
                 MessageBox.Show("Everything is up to date!!");
             else
                 MessageBox.Show(sb.ToString());
+        }
+
+        private void OnClosing(object sender, FormClosingEventArgs e)
+        {
+            m_ctWeb?.Close();
         }
     }
 }

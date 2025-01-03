@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CtLists", "CtLists.csproj",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCore.Util", "..\liblet\cs\TCore.Util\TCore.Util.csproj", "{59868345-BC40-4771-A4D7-7C6A763663F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCore.WebControl", "..\liblet\cs\TCore.WebControl\TCore.WebControl.csproj", "{84B4E064-D576-4F70-B54A-3899E50865F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{59868345-BC40-4771-A4D7-7C6A763663F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59868345-BC40-4771-A4D7-7C6A763663F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59868345-BC40-4771-A4D7-7C6A763663F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84B4E064-D576-4F70-B54A-3899E50865F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84B4E064-D576-4F70-B54A-3899E50865F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84B4E064-D576-4F70-B54A-3899E50865F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84B4E064-D576-4F70-B54A-3899E50865F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

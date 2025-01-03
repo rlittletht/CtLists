@@ -55,7 +55,11 @@ namespace CtLists
                     {
                         if (!bottlesToUpdateOnCT.ContainsKey(bottle.Barcode))
                         {
-                            bottlesToUpdateOnCT.Add(bottle.Barcode, bottle);
+                            // we want to make sure we add the bottle with the NEW bin
+                            Bottle bottleWithNewBin = new Bottle(bottle);
+                            bottleWithNewBin.SetOrUpdateValue("Bin", bottles[bottle.Barcode].Bin);
+
+                            bottlesToUpdateOnCT.Add(bottle.Barcode, bottleWithNewBin);
                         }
                         else
                         {

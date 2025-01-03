@@ -226,6 +226,10 @@ namespace CtLists
             return "Unk";
         }
 
+        public void SetOrUpdateValue(string sKey, string sValue)
+        {
+            m_bottleValues[sKey] = sValue;
+        }
 
         public string GetValue(string sKey)
         {

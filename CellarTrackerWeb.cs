@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using mshtml;
-using StatusBox;
+using OpenQA.Selenium;
+using OpenQA.Selenium.DevTools.V125.Debugger;
+using TCore.StatusBox;
+using TCore.UI;
+using TCore.WebControl;
 
 namespace CtLists
 {
@@ -12,26 +16,48 @@ namespace CtLists
         private string m_sUsername;
         private string m_sPassword;
 
-        private StatusRpt m_srpt;
+        private StatusBox m_srpt;
         private WebControl m_wc;
 
         static string _s_Login = @"https://www.cellartracker.com/password.asp";
         private static string _s_LoginLegacy = @"https://www.cellartracker.com/classic/password.asp";
 
         private static string _s_CtlName_LoginName = @"szUser";
-        private static string _s_CtlName_LoginPassword  = @"szPassword";
+        private static string _s_CtlName_LoginPassword = @"szPassword";
 
-        public CellarTrackerWeb(string sUsername, string sPassword, StatusRpt srpt)
+        public CellarTrackerWeb(string sUsername, string sPassword, StatusBox srpt)
         {
             m_sUsername = sUsername;
             m_sPassword = sPassword;
             m_srpt = srpt;
-            m_wc = new WebControl(srpt);
+            m_wc = new WebControl(srpt, true);
         }
 
         public void Show()
         {
-            m_wc.Visible = true;
+            // m_wc.Visible = true;
+        }
+
+        void WaitForLoginPageAdvance(IEnumerable<string> names)
+        {
+            m_wc.WaitForCondition(
+                (d) =>
+                {
+                    foreach (string name in names)
+                    {
+                        try
+                        {
+                            d.FindElement(By.Name(name));
+                            return true;
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    return false;
+                },
+                5000);
         }
 
         public void EnsureLoggedIn()
@@ -42,24 +68,42 @@ namespace CtLists
             m_srpt.AddMessage("Logging in...");
             m_srpt.PushLevel();
 
-            if (!m_wc.FNavToPage(_s_LoginLegacy) || !m_wc.FWaitForNavFinish())
-                throw new Exception("couldn't navigate to login page");
 
-            IHTMLDocument2 oDoc2 = m_wc.Document2;
-            WebControl.FSetInputControlText(oDoc2, _s_CtlName_LoginName, m_sUsername, false);
-            WebControl.FSetInputControlText(oDoc2, _s_CtlName_LoginPassword, m_sPassword, false);
+            int cRetry = 2;
 
-            m_wc.ResetNav();
-            IHTMLElement ihe = WebControl.FindSubmitControlByValueText(oDoc2, null);
-            if (ihe == null)
-                throw new Exception("no submit control?");
+            while (cRetry > 0)
+            {
+                try
+                {
+                    if (!m_wc.FNavToPage(_s_LoginLegacy))
+                        throw new Exception("couldn't navigate to login page");
 
-            ihe.click();
-            m_wc.FWaitForNavFinish(_s_CtlId_Cellar_MyWine);
+                    WaitForLoginPageAdvance(
+                        new[]
+                        {
+                            "szPassword"
+                        });
+
+                    m_wc.FSetTextForInputControlName("szUser", m_sUsername, false);
+                    m_wc.FSetTextForInputControlName("szPassword", m_sPassword, false);
+
+                    WebControl.FClickSubmitControlByValue(m_wc.Driver, "LOGIN");
+
+                    if (!WebControl.WaitForControl(m_wc.Driver, m_srpt, "mywine"))
+                        throw new Exception("couldn't find mywine control");
+
+                    break;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show("We might be stuck at a captcha. Please check and then continue", "Login", MessageBoxButtons.OK);
+                    cRetry--;
+                }
+            }
+
             m_fLoggedIn = true;
             m_srpt.PopLevel();
             m_srpt.AddMessage("Login complete");
-            
         }
 
         private static string _s_MyCellarPage = @"https://www.cellartracker.com/classic/list.asp?Table=List";
@@ -67,7 +111,7 @@ namespace CtLists
         private static string _s_CtlName_DrinkOrRemove_Notes = @"ConsumptionNote";
         private static string _s_CtlName_DrinkOrRemove_DrinkDate = @"DrinkDate";
         private static string _s_CtlId_Cellar_MyWine = @"mywine";
-        private static string _s_CtlName_DrinkOrRemove_Submit = @"bSubmit";
+        private static string _s_CtlName_DrinkOrRemove_Submit = @"CONSUME THIS BOTTLE";
         private static string _s_CtlId_WineInfo_Heading = @"hproduct";
 
         public void DrinkWine(string sBarcode, string sNotes, DateTime dttmConsumedUtc)
@@ -77,37 +121,28 @@ namespace CtLists
             m_srpt.AddMessage($"Drinking wine {sBarcode}...");
             m_srpt.PushLevel();
 
-            if (!m_wc.FNavToPage(_s_MyCellarPage) || !m_wc.FWaitForNavFinish(_s_CtlId_Cellar_MyWine))
+            if (!m_wc.FNavToPage(_s_MyCellarPage))
                 throw new Exception("couldn't navigate to cellar page");
 
-            IHTMLDocument2 oDoc2 = m_wc.Document2;
-            WebControl.FSetInputControlText(oDoc2, _s_CtlName_Cellar_Search, sBarcode, false);
+            m_wc.FSetTextForInputControlName(_s_CtlName_Cellar_Search, sBarcode, false);
 
-            m_wc.ResetNav();
-            IHTMLElement ihe = WebControl.FindSubmitControlByValueText(oDoc2, "GO!");
-            if (ihe == null)
-                throw new Exception("no submit control?");
+            WebControl.FClickSubmitControlByValue(m_wc.Driver, "GO!");
 
-            ihe.click();
-            m_wc.FWaitForNavFinish();
+            if (!WebControl.WaitForControlName(m_wc.Driver, m_srpt, _s_CtlName_DrinkOrRemove_Notes))
+                throw new Exception("couldn't navigate to wine");
 
-            oDoc2 = m_wc.Document2;
             if (!string.IsNullOrEmpty(sNotes))
-                WebControl.FSetInputControlText(oDoc2, _s_CtlName_DrinkOrRemove_Notes, sNotes, false);
+                m_wc.FSetTextForInputControlName(_s_CtlName_DrinkOrRemove_Notes, sNotes, false);
 
-            WebControl.FSetInputControlText(oDoc2, _s_CtlName_DrinkOrRemove_DrinkDate, dttmConsumedUtc.ToLocalTime().ToString("MM/dd/yyyy"), false);
+            m_wc.FSetTextForInputControlName(_s_CtlName_DrinkOrRemove_DrinkDate, dttmConsumedUtc.ToLocalTime().ToString("MM/dd/yyyy"), false);
 
-            Dictionary<string, string> valueMappings = WebControl.MpGetSelectValues(m_srpt, oDoc2, "ConsumptionType");
+            m_wc.FSetSelectedOptionTextForControlName("ConsumptionType", "Drank from my cellar");
 
-            WebControl.FSetSelectControlValue(oDoc2, "ConsumptionType", valueMappings["Drank from my cellar"], false);
+            WebControl.FClickSubmitControlByValue(m_wc.Driver, _s_CtlName_DrinkOrRemove_Submit);
 
-            m_wc.ResetNav();
-            ihe = WebControl.FindSubmitControlByName(oDoc2, _s_CtlName_DrinkOrRemove_Submit);
-            if (ihe == null)
-                throw new Exception("no submit control?");
+            if (!WebControl.WaitForControl(m_wc.Driver, m_srpt, _s_CtlId_WineInfo_Heading))
+                throw new Exception("couldn't submit wine");
 
-            ihe.click();
-            m_wc.FWaitForNavFinish(_s_CtlId_WineInfo_Heading);
             m_srpt.PopLevel();
             m_srpt.AddMessage("Drink complete");
         }
@@ -178,6 +213,7 @@ namespace CtLists
 
             return false;
         }
+
         private static string _s_InventoryScanPageRoot = @"https://www.cellartracker.com/classic/list.asp?Table=Scan";
         private static string _s_CtlName_InventoryScanPageRoot_SetBin = @"SetBin";
         private static string _s_CtlName_InventoryScanPageRoot_Submit_BulkUpdate = @"Bulk Update";
@@ -185,32 +221,54 @@ namespace CtLists
         public void RelocateWine(string sBarcode, string sBin)
         {
             EnsureLoggedIn();
-
             m_srpt.AddMessage($"Relocating wine {sBarcode}...");
             m_srpt.PushLevel();
 
             // navigate directly to the relocation page
             string sPage = $"{_s_InventoryScanPageRoot}&iInventoryList={sBarcode}";
-            if (!m_wc.FNavToPage(sPage) || !m_wc.FWaitForNavFinish((doc2) => FHasWineInTableRowOnPage(doc2, sBarcode)))
+            if (!m_wc.FNavToPage(sPage))
             {
                 throw new Exception("couldn't navigate to cellar page");
             }
 
-            IHTMLDocument2 oDoc2 = m_wc.Document2;
+            string xpath = $"//tr[@class='properties']//td[2][contains(text(), '{sBarcode}')]";
 
-            WebControl.FSetInputControlText(oDoc2, _s_CtlName_InventoryScanPageRoot_SetBin, sBin, false);
+            while (true)
+            {
+                try
+                {
+                    var d = m_wc.Driver.FindElement(By.XPath(xpath));
+                    if (d != null)
+                        break;
+                }
+                catch(Exception e)
+                {
+                    MessageBox.Show($"caught exception waiting for barcode {e.Message}");
+                }
 
-            m_wc.ResetNav();
-            IHTMLElement ihe = WebControl.FindSubmitControlByValueText(oDoc2, _s_CtlName_InventoryScanPageRoot_Submit_BulkUpdate);
-            if (ihe == null)
-                throw new Exception("no submit control?");
+                InputBox.ShowInputBox("XPath", xpath, out xpath);
+            }
+            m_wc.WaitForXpath($"//tr[@class='properties']//td[2][contains(text(), '{sBarcode}')]", 5000);
 
-            ihe.click();
-            if (!m_wc.FWaitForNavFinish((doc2) => FHasCorrectBinInTableRowOnPage(doc2, sBin)))
-                throw new Exception($"failed to relocate wine {sBarcode} to {sBin}");
+            m_wc.FSetTextForInputControlName(_s_CtlName_InventoryScanPageRoot_SetBin, sBin, false);
+
+            WebControl.FClickSubmitControlByValue(m_wc.Driver, _s_CtlName_InventoryScanPageRoot_Submit_BulkUpdate);
+
+            m_wc.WaitForXpath($"//tr[@class='properties']//td[8][contains(text(), '{sBin}')]", 5000);
 
             m_srpt.PopLevel();
             m_srpt.AddMessage("Relocate complete");
+        }
+
+        public void Close()
+        {
+            if (m_wc.Driver != null)
+            {
+                m_wc.Driver.Close();
+                m_wc.Driver.Quit();
+                m_wc.Driver.Dispose();
+                m_wc = null;
+            }
         }
     }
 }
